@@ -1,10 +1,10 @@
- /*
- * @Author: tangbo 852425209@qq.com
- * @Date: 2022-06-15 15:30:27
- * @LastEditors: tangbo 852425209@qq.com
- * @LastEditTime: 2022-06-15 17:08:30
- * @FilePath: \saas-platform\vite.config.ts
- * @Description:
+/*
+ * @Author       : tangbo 852425209@qq.com
+ * @Date         : 2023-02-18 00:27:22
+ * @LastEditors  : tangbo 852425209@qq.com
+ * @LastEditTime : 2023-07-11 14:50:58
+ * @FilePath     : \vue3_ts\vite.config.ts
+ * @Description  :
  */
 import { UserConfig, ConfigEnv } from 'vite'
 import { createVitePlugins } from './config/vite/plugins'
@@ -16,7 +16,6 @@ function pathResolve(dir: string) {
   return resolve(process.cwd(), '.', dir)
 }
 
-// https://vitejs.dev/config/
 export default ({ command, mode }: ConfigEnv): UserConfig => {
   const isBuild = command === 'build'
   console.log(command, mode)
@@ -35,10 +34,10 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         },
       ],
     },
-    // plugins
+    // 插件
     plugins: createVitePlugins(isBuild, mode),
 
-    // css
+    // CSS
     css: {
       preprocessorOptions: {
         less: {
@@ -48,20 +47,23 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       },
     },
 
-    // server
+    // 基础配置
+    base: './',
+
+    // 服务器配置
     server: {
       hmr: { overlay: false }, // 禁用或配置 HMR 连接 设置 server.hmr.overlay 为 false 可以禁用服务器错误遮罩层
       // 服务配置
       port: VITE_PORT, // 类型： number 指定服务器端口;
       open: false, // 类型： boolean | string在服务器启动时自动在浏览器中打开应用程序；
-      cors: false, // 类型： boolean | CorsOptions 为开发服务器配置 CORS。默认启用并允许任何源
+      cors: true, // 类型： boolean | CorsOptions 为开发服务器配置 CORS。默认启用并允许任何源
       host: '0.0.0.0', // IP配置，支持从IP启动
       proxy: proxy,
     },
 
-    // build
+    // 构建配置
     build: {
-      target: 'es2015',
+      target: 'es2018',
       terserOptions: {
         compress: {
           keep_infinity: true,
@@ -69,14 +71,10 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         },
       },
       rollupOptions: {
-        // 确保外部化处理那些你不想打包进库的依赖
         external: [],
-        // https://rollupjs.org/guide/en/#big-list-of-options
       },
-      watch: {
-        // https://rollupjs.org/guide/en/#watch-options
-      },
-      // Turning off brotliSize display can slightly reduce packaging time
+      watch: {},
+
       brotliSize: false,
       chunkSizeWarningLimit: 2000,
     },

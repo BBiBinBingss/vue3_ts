@@ -2,34 +2,36 @@
  * @Author       : tangbo 852425209@qq.com
  * @Date         : 2022-06-29 16:54:06
  * @LastEditors  : tangbo 852425209@qq.com
- * @LastEditTime : 2022-12-07 16:33:02
+ * @LastEditTime : 2023-08-24 10:54:51
  * @FilePath     : \vue3_ts\postcss.config.js
- * @Description  : 
+ * @Description  :
  */
-module.exports = {
-  plugins: {
-    autoprefixer: {},
-    'postcss-px-to-viewport': {
-      // 需要转换的单位，默认为 px
+module.exports = ({ file }) => {
+  const isVueFile = file && file.dirname && file.dirname.endsWith('vue')
+
+  const config = {
+    plugins: {
+      autoprefixer: {},
+      'postcss-px-to-viewport': {},
+    },
+  }
+
+  if (isVueFile) {
+    // 在这里获取屏幕宽度，例如从 window 或者其他途径
+    const screenWidth = window.innerWidth // 这里仅为示例，实际情况需要根据项目结构获取
+
+    config.plugins['postcss-px-to-viewport'] = {
       unitToConvert: 'px',
-      // 视窗的宽度，对应的是我们设计稿的宽度
-      viewportWidth: 1920,
-      // 指定 px 转换为视窗单位值的小数位数（很多时候无法整除）
+      viewportWidth: screenWidth, // 使用获取到的屏幕宽度
       unitPrecision: 3,
-      // 能转化为 vw 的属性列表
       propList: ['*'],
-      // 指定需要转换成的视窗单位，建议使用 vw
       viewportUnit: 'vw',
-      // 字体使用的视口单位
       fontViewportUnit: 'vw',
-      // 指定不转换为视窗单位的类，可以自定义，可以无限添加,建议定义一至两个通用的类名
-      selectorBlackList: [
-        '.ignore'
-      ],
-      // 小于或等于 1px 不转换为视窗单位，你也可以设置为你想要的值
+      selectorBlackList: ['.ignore'], // 在这里添加 nprogress 相关类名和 ID
       minPixelValue: 1,
-      // 允许在媒体查询中转换 px
-      mediaQuery: false
+      mediaQuery: false,
     }
-  },
+  }
+
+  return config
 }

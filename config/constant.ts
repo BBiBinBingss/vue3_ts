@@ -34,3 +34,4 @@ export const COMPRESSION = true
 
 // 删除 console
 export const VITE_DROP_CONSOLE = true
+

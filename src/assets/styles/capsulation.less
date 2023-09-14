@@ -1,55 +1,55 @@
-// ui图的宽
-@BASE_WIDTH: 1920px;
-// ui图的高
-@BASE_HEIGHT: 1080px;
-
-// 可视单位的换算
-
-// 宽
-.width(@vw) {
-  width: (@vw / @BASE_WIDTH) * 100vw;
-}
-
-// 高
-.height(@vh) {
-  height: (@vh / @BASE_HEIGHT) * 100vh;
-}
-
-// 字体的大小
-.font-size(@size,@weight) {
-  font-size: (@size / @BASE_WIDTH) * 100vw;
-  font-weight: @weight;
-}
-
-// 行高
-.line-height(@line) {
-  line-height: (@line / @BASE_HEIGHT) * 100vh;
-}
-
-// padding
-.padding(@top,@right,@bottom,@left) {
-  padding-top: (@top / @BASE_HEIGHT) * 100vh;
-  padding-right: (@right / @BASE_WIDTH) * 100vw;
-  padding-bottom: (@bottom / @BASE_HEIGHT) * 100vh;
-  padding-left: (@left / @BASE_WIDTH) * 100vw;
-}
-
-// margin
-.margin(@top,@right,@bottom,@left) {
-  margin-top: (@top / @BASE_HEIGHT) * 100vh;
-  margin-right: (@right / @BASE_WIDTH) * 100vw;
-  margin-bottom: (@bottom / @BASE_HEIGHT) * 100vh;
-  margin-left: (@left / @BASE_WIDTH) * 100vw;
-}
-
-// 没有计算宽高
+// 宽高
 .size(@width, @height) {
   width: @width;
   height: @height;
 }
 
-// 转换计算宽高
-.size-calculate(@width, @height) {
-  .width(@width);
-  .height(@height);
+// 相对定位
+.relative {
+  position: relative;
+}
+
+// 绝对定位
+.absolute {
+  position: absolute;
+}
+
+// 垂直居中
+.center-vertically {
+  display: flex;
+  align-items: center;
+}
+
+// 水平居中
+.center-horizontally {
+  display: flex;
+  justify-content: center;
+}
+
+// 水平垂直居中
+.center-both {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// 背景颜色
+.bg-color(@color) {
+  background-color: @color;
+}
+
+// 文字颜色大小
+.text-color-size(@color, @size) {
+  color: @color;
+  font-size: @size;
+}
+
+// 圆角
+.border-radius(@radius) {
+  border-radius: @radius;
+}
+
+// 边框
+.border(@width, @style, @color) {
+  border: @width @style @color;
 }
