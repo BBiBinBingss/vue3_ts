@@ -63,7 +63,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
 
     // 构建配置
     build: {
-      target: 'es2020',
+      target: 'es2018',
       terserOptions: {
         compress: {
           keep_infinity: true,
