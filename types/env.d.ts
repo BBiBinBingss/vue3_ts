@@ -2,11 +2,13 @@
  * @Author       : tangbo 852425209@qq.com
  * @Date         : 2022-10-26 10:09:00
  * @LastEditors  : tangbo 852425209@qq.com
- * @LastEditTime : 2022-10-26 11:33:30
- * @FilePath     : \hubei-traffic\types\env.d.ts
- * @Description  : 
+ * @LastEditTime : 2023-05-15 11:27:15
+ * @FilePath     : \vue3_ts\types\env.d.ts
+ * @Description  :
  */
 /// <reference types="vite/client" />
+/// <reference types="vite-plugin-pages/client" />
+/// <reference types="unplugin-auto-import" />
 
 declare module '*.vue' {
   import { DefineComponent } from 'vue'

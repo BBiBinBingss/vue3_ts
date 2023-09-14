@@ -2,7 +2,7 @@
  * @Author       : tangbo 852425209@qq.com
  * @Date         : 2022-06-29 16:54:06
  * @LastEditors  : tangbo 852425209@qq.com
- * @LastEditTime : 2023-03-07 14:47:06
+ * @LastEditTime : 2023-08-17 15:23:49
  * @FilePath     : \vue3_ts\config\vite\plugins\index.ts
  * @Description  :
  */
@@ -26,7 +26,9 @@ import { ConfigPagesPlugin } from './pages'
 import { ConfigRestartPlugin } from './restart'
 import { ConfigProgressPlugin } from './progress'
 import { createTitlePlugin } from './plugintitle'
-// import { ConfigLayoutsPlugin } from './layouts'
+import { ConfigLayoutsPlugin } from './layouts'
+import cesium from 'vite-plugin-cesium'
+
 
 export function createVitePlugins(isBuild: boolean, mode: string) {
   const vitePlugins: (Plugin | Plugin[])[] = [
@@ -49,7 +51,7 @@ export function createVitePlugins(isBuild: boolean, mode: string) {
     // 自动生成路由
     ConfigPagesPlugin(),
     // 自动生成嵌套路由
-    // ConfigLayoutsPlugin(),
+    ConfigLayoutsPlugin(),
     // 开启.gz压缩  rollup-plugin-gzip
     ConfigCompressPlugin(),
     // 监听配置文件改动重启
@@ -58,6 +60,8 @@ export function createVitePlugins(isBuild: boolean, mode: string) {
     ConfigProgressPlugin(),
     // 页面title
     createTitlePlugin(mode),
+     // cesium
+    cesium(),
   ]
 
   vitePlugins.push(windiCSS())

@@ -7,7 +7,7 @@ export function createFakeUserList() {
     {
       user_id: '3306',
       user_name: 'blindmonk',
-      real_name: '扫地盲僧',
+      real_name: '混世魔王',
       avatar: 'https://api.multiavatar.com/blindmonk.svg',
       desc: '达摩深寺扫地僧，盲崖盘坐思人生',
       password: 'blindmonk',
@@ -26,7 +26,7 @@ export function createFakeUserList() {
     {
       user_id: '80',
       user_name: 'test',
-      real_name: '盲僧水友',
+      real_name: '混世魔王',
       avatar: 'https://api.multiavatar.com/test.svg',
       desc: '欢迎加入扫地盲僧水友群',
       password: 'test',
