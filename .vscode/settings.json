@@ -80,12 +80,12 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.eslint": true
   },
   "[vue]": {
     "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit",
-      "source.fixAll.stylelint": "explicit"
+      "source.fixAll.eslint": true,
+      "source.fixAll.stylelint": true
     },
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
