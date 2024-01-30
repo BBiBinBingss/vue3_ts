@@ -8,13 +8,15 @@
  */
 
 /**
- * 将地图的中心点设置为指定坐标，如果地图容器为空，则不执行操作。
- * @param map 地图实例
- * @param center 新的中心点坐标 [经度, 纬度]
+ * 设置地图中心点
+ * @param {any} map - 地图实例
+ * @param {number[]} center - 要设置的中心点坐标，形如 [longitude, latitude]
  */
-
 export function setMapCenter(map: any, center: number[]): void {
-  if (!map.container) return // 如果地图容器为空，直接返回
-  const view = map.container.getView() // 获取地图视图实例
-  view.setCenter(center) // 设置地图中心点
+  // 如果地图容器不存在或为空，则直接退出函数
+  if (!map.container) return
+  // 从地图实例中获取当前的视图
+  const view = map.container.getView()
+  // 使用提供的坐标设置地图的中心位置
+  view.setCenter(center)
 }

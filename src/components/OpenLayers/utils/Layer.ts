@@ -2,7 +2,7 @@
  * @Author       : tangbo 852425209@qq.com
  * @Date         : 2023-08-11 11:26:02
  * @LastEditors  : tangbo 852425209@qq.com
- * @LastEditTime : 2023-08-11 11:27:25
+ * @LastEditTime : 2023-10-19 10:32:47
  * @FilePath     : \vue3_ts\src\components\OpenLayers\utils\Layer.ts
  * @Description  : 图层管理
  */
@@ -13,16 +13,29 @@ import WMTSTileGrid from 'ol/tilegrid/WMTS'
 import { get as getProjection, ProjectionLike } from 'ol/proj'
 import { getTopLeft, getWidth } from 'ol/extent'
 
+// 获取指定的投影
 const projection: ProjectionLike | any = getProjection('EPSG:4326')
 const projectionExtent = projection?.getExtent()
 const size = getWidth(projectionExtent) / 256
 const resolutions: any = []
 const matrixIds: any = []
+
+// 计算分辨率和矩阵ID
 for (let z = 0; z < 19; ++z) {
   resolutions[z] = size / Math.pow(2, z)
   matrixIds[z] = z
 }
 
+/**
+ * 创建瓦片图层
+ * @param {string} className - 图层类名
+ * @param {boolean} visible - 图层是否可见
+ * @param {number} zIndex - 图层的z-index
+ * @param {string} url - WMTS服务的URL
+ * @param {string} layerName - WMTS图层名称
+ * @param {boolean} wrapX - 是否在X轴上重复
+ * @returns {TileLayer} 返回配置好的瓦片图层对象
+ */
 function createLayer(
   className: string,
   visible: boolean,
@@ -32,27 +45,28 @@ function createLayer(
   wrapX: boolean
 ) {
   return new TileLayer({
-    className: className,
-    visible: visible,
+    className,
+    visible,
     zIndex,
     source: new WMTS({
-      url: url,
+      url,
       layer: layerName,
       format: 'tiles',
-      projection: projection,
+      projection,
       matrixSet: 'c',
       tileGrid: new WMTSTileGrid({
         origin: getTopLeft(projectionExtent),
-        resolutions: resolutions,
-        matrixIds: matrixIds,
+        resolutions,
+        matrixIds,
       }),
       style: 'default',
-      wrapX: wrapX,
+      wrapX,
       crossOrigin: 'anonymous',
     }),
   })
 }
 
+// 配置各个瓦片图层
 export const layer = {
   矢量图: createLayer(
     '矢量图',

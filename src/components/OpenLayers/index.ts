@@ -2,7 +2,7 @@
  * @Author       : tangbo 852425209@qq.com
  * @Date         : 2023-08-11 10:18:19
  * @LastEditors  : tangbo 852425209@qq.com
- * @LastEditTime : 2023-08-11 16:07:00
+ * @LastEditTime : 2023-10-19 10:28:14
  * @FilePath     : \vue3_ts\src\components\OpenLayers\index.ts
  * @Description  :
  */
@@ -19,18 +19,24 @@ export default defineComponent({
   name: 'OpenLayers',
 
   setup() {
-    // DOM
+    // DOM和样式的引用
     const map = ref<Container | null>(null)
-    // 样式
     const styles = useStyles()
-    // 图层管理
-    const viewer = viewerSettingStore()
-    // 基本配置
+
+    // 直接从store中提取所需的状态
+    const { ErlMergeViewer } = viewerSettingStore()
     const basicSetting = basicSettingStore()
 
     onMounted(async () => {
-      map.value = new Container('map', basicSetting)
-      toggleLayerVisibility(map.value, viewer.ErlMergeViewer)
+      try {
+        // 初始化地图容器
+        map.value = new Container('map', basicSetting)
+        // 切换图层可见性
+        toggleLayerVisibility(map.value, ErlMergeViewer)
+      } catch (error) {
+        // 错误处理
+        console.error('初始化OpenLayers时出错:', error)
+      }
     })
 
     return () => h('div', { id: 'map', class: styles.value.map })
