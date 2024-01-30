@@ -1,8 +1,8 @@
 /*
  * @Author       : tangbo 852425209@qq.com
  * @Date         : 2023-02-18 00:27:23
- * @LastEditors  : tangbo 852425209@qq.com
- * @LastEditTime : 2023-07-11 14:59:30
+ * @LastEditors: tangbo 852425209@qq.com
+ * @LastEditTime: 2024-01-05 17:04:10
  * @FilePath     : \vue3_ts\config\vite\plugins\autoImport.ts
  * @Description  :
  */
@@ -21,7 +21,8 @@ export const AutoImportDeps = () => {
     'vue-router',
     '@vueuse/core',
     {
-      vue: ['ref as $ref'],
+      from: 'vue',
+      imports: [{ name: 'ref', as: '$ref' }],
     },
   ]
 

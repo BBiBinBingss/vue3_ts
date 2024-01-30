@@ -1,8 +1,8 @@
 /*
  * @Author       : tangbo 852425209@qq.com
  * @Date         : 2022-10-26 10:09:00
- * @LastEditors  : tangbo 852425209@qq.com
- * @LastEditTime : 2023-07-11 14:58:58
+ * @LastEditors: tangbo 852425209@qq.com
+ * @LastEditTime: 2024-01-05 11:39:59
  * @FilePath     : \vue3_ts\tsconfig.json
  * @Description  :
  */
@@ -28,7 +28,7 @@
     "lib": ["dom", "esnext"],
     "noImplicitAny": false,
     "skipLibCheck": true,
-    "types": ["vite/client", "vite-plugin-vue-layouts/client"],
+    "types": ["vite/client", "vite-plugin-vue-layouts/client", "cesium"],
     "removeComments": true,
     "paths": {
       "/@/*": ["src/*"],
@@ -51,5 +51,5 @@
     "./auto-imports.d.ts",
     "node_modules/unplugin-auto-import/types.d.ts"
   ],
-  "exclude": ["node_modules", "tests/server/**/*.ts", "dist", "**/*.js", "dist"]
+  "exclude": ["node_modules", "tests/server/**/*.ts", "dist", "**/*.js", "dist", "cesium"]
 }

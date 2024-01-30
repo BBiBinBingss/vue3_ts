@@ -1,65 +1,84 @@
 /*
  * @Author       : tangbo 852425209@qq.com
  * @Date         : 2023-08-11 11:01:20
- * @LastEditors  : tangbo 852425209@qq.com
- * @LastEditTime : 2023-08-23 10:38:03
+ * @LastEditors: tangbo 852425209@qq.com
+ * @LastEditTime: 2024-01-08 10:24:20
  * @FilePath     : \vue3_ts\src\components\Cesium\utils\Container.ts
  * @Description  : 初始化地图
  */
 
-import { Viewer, Cartesian3, Math } from 'cesium'
+import { Viewer, Cartesian3, Math as CesiumMath, EasingFunction } from 'cesium'
 import { nextTick } from 'vue'
 import { layers } from './useLayer'
 import { viewerSettingStore } from '/@/store/modules/viewerSetting'
 import { coordinatesSettingStore } from '/@/store/modules/coordinatesSetting'
 
 export default class Container {
-  private container: Viewer
+  private viewer: Viewer
+
+  // 公开的getter，以允许外部访问_viewer
+  public get container(): Viewer {
+    return this.viewer
+  }
 
   constructor(containerSelector: string) {
-    // 初始化容器
-    this.container = this._initViewer(containerSelector)
-    // 异步加载
-    nextTick(async () => {
-      // 初始化图层
-      this._initLayer()
-      // 初始化位置
-      await this._initPosition()
-    })
+    this.viewer = this.initializeViewer(containerSelector)
+    nextTick(this.postInitialize.bind(this))
   }
 
-  // 初始化容器
-  private _initViewer(containerSelector: string): Viewer {
-    return new Viewer(containerSelector, { ...viewerSettingStore().viewerModule })
+  /**
+   * 初始化Viewer实例
+   * @param containerSelector 容器选择器
+   * @returns Viewer实例
+   */
+  private initializeViewer(containerSelector: string): Viewer {
+    const viewerSettings = viewerSettingStore().viewerModule
+    return new Viewer(containerSelector, { ...viewerSettings })
   }
 
-  // 初始化图层
-  private _initLayer(): void {
-    // 初始化加载图层
-    layers.forEach((layer: any) => {
-      this.container.imageryLayers.addImageryProvider(layer)
+  /**
+   * 异步加载后的初始化
+   */
+  private async postInitialize(): Promise<void> {
+    this.initializeLayers()
+    await this.initializePosition()
+  }
+
+  /**
+   * 初始化图层
+   */
+  private initializeLayers(): void {
+    layers.forEach((layer) => {
+      this.viewer.imageryLayers.addImageryProvider(layer)
     })
 
-    // 隐藏图层
-    const layerCount = this.container.imageryLayers.length
-    for (let i = 0; i < layerCount; i++) {
-      const layer = this.container.imageryLayers.get(i)
+    for (let i = 0; i < this.viewer.imageryLayers.length; i++) {
+      const layer = this.viewer.imageryLayers.get(i)
       layer.show = false
     }
   }
 
-  // 初始化位置
-  private async _initPosition(): Promise<void> {
+  /**
+   * 初始化Viewer的位置
+   */
+  private async initializePosition(): Promise<void> {
     const { lon, lat, height, heading, pitch, roll } = coordinatesSettingStore().LocationComponent
     const destination = Cartesian3.fromDegrees(lon, lat, height)
     const orientation = {
-      heading: Math.toRadians(heading),
-      pitch: Math.toRadians(pitch),
-      roll: Math.toRadians(roll),
+      heading: CesiumMath.toRadians(heading),
+      pitch: CesiumMath.toRadians(pitch),
+      roll: CesiumMath.toRadians(roll),
     }
-    await this.container.scene.camera.setView({
+
+    // 设置动画效果的相机过渡参数
+    const flyToOptions = {
       destination,
       orientation,
-    })
+      duration: 3.0,
+      easingFunction: EasingFunction?.LINEAR,
+    }
+
+    // 使用 flyTo 进行平滑过渡
+    await this.viewer.scene.camera.flyTo(flyToOptions)
   }
 }
