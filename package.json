@@ -3,6 +3,8 @@
   "version": "0.2.3",
   "author": "混世魔王",
   "scripts": {
+    "cleanAndPrune": "rimraf node_modules && pnpm store prune",
+    "bootstrap": "pnpm install",
     "dev": "vite --mode development --host",
     "build": "vite build",
     "preview": "vite preview",
@@ -114,5 +116,10 @@
     "*.md": [
       "prettier --write"
     ]
+  },
+  "engines": {
+    "node": "18.0.0",
+    "npm": "8.6.0",
+    "pnpm": "8.6.2"
   }
 }

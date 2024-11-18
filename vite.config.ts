@@ -1,9 +1,9 @@
 /*
  * @Author       : tangbo 852425209@qq.com
  * @Date         : 2023-02-18 00:27:22
- * @LastEditors  : tangbo 852425209@qq.com
- * @LastEditTime : 2023-07-11 14:50:58
- * @FilePath     : \vue3_ts\vite.config.ts
+ * @LastEditors: tangbo 
+ * @LastEditTime: 2024-08-23 17:02:38
+ * @FilePath: \vue3_ts\vite.config.ts
  * @Description  :
  */
 import { UserConfig, ConfigEnv } from 'vite'
@@ -74,7 +74,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         external: [],
       },
       watch: {},
-
+      minify: 'terser',
       brotliSize: false,
       chunkSizeWarningLimit: 2000,
     },

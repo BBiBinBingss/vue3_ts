@@ -7,7 +7,7 @@
  * @Description  :
  */
 
-import { h, defineComponent, onMounted } from 'vue'
+import { h, defineComponent, onMounted, onBeforeUnmount, ref } from 'vue'
 import Container from './utils/Container'
 import useStyles from './utils/useStyles'
 
@@ -28,6 +28,13 @@ export default defineComponent({
       cesiumContainer.value = new Container('cesium-container')
       // 使用layers store初始化默认图层
       layers.setLayers(cesiumContainer.value.container, ['vec', 'cva'])
+    })
+
+    onBeforeUnmount(() => {
+      if (cesiumContainer.value) {
+        cesiumContainer.value.destroy()
+        cesiumContainer.value = null
+      }
     })
 
     return () => {
