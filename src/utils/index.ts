@@ -13,7 +13,7 @@
  * @return null
  */
 
-export const imageUrlToBase64 = (imageUrl: string): Promise<string> => {
+const imageUrlToBase64 = (imageUrl: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     let image = new Image()
     image.setAttribute('crossOrigin', 'anonymous')

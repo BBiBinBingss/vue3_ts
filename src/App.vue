@@ -7,12 +7,7 @@
  * @Description  : 
 -->
 <template>
-  <n-config-provider
-    :theme="getDarkTheme"
-    :locale="zhCN"
-    :date-locale="dateZhCN"
-    :theme-overrides="getThemeOverrides"
-  >
+  <n-config-provider :theme="getDarkTheme" :locale="zhCN" :date-locale="dateZhCN" :theme-overrides="getThemeOverrides">
     <n-message-provider>
       <MessageApi />
     </n-message-provider>
