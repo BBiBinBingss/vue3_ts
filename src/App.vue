@@ -1,9 +1,9 @@
 <!--
  * @Author       : tangbo 852425209@qq.com
  * @Date         : 2022-10-26 10:08:59
- * @LastEditors  : tangbo 852425209@qq.com
- * @LastEditTime : 2023-07-11 15:36:41
- * @FilePath     : \vue3_ts\src\App.vue
+ * @LastEditors: BBiBinBings
+ * @LastEditTime: 2025-01-04 20:36:14
+ * @FilePath: \vue3_tsv\src\App.vue
  * @Description  : 
 -->
 <template>
