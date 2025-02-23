@@ -1,9 +1,9 @@
 /*
  * @Author       : tangbo 852425209@qq.com
  * @Date         : 2023-02-18 00:27:23
- * @LastEditors  : tangbo 852425209@qq.com
- * @LastEditTime : 2023-03-07 11:10:42
- * @FilePath     : \vue3_ts\config\vite\proxy.ts
+ * @LastEditors: BBiBinBings 
+ * @LastEditTime: 2025-02-23 22:34:06
+ * @FilePath: \vue3_tsv\config\vite\proxy.ts
  * @Description  :
  */
 import {
