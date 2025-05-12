@@ -7,7 +7,6 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Layout: typeof import('./../src/components/Layout/index.vue')['default']
     MessageApi: typeof import('./../src/components/MessageApi/index.vue')['default']
-    NConfigProvider: typeof import('naive-ui')['NConfigProvider']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
