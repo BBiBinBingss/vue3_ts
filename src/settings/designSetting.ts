@@ -20,7 +20,13 @@ export const appThemeList: string[] = [
   '#FC5404',
 ]
 
-const setting = {
+export interface DesignSetting {
+  darkTheme: boolean
+  appTheme: string
+  appThemeList: string[]
+}
+
+const setting: DesignSetting = {
   //深色主题
   darkTheme: false,
   //系统主题色

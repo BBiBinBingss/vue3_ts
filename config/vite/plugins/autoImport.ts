@@ -11,19 +11,10 @@
  * @description 按需加载，自动引入
  */
 import AutoImport from 'unplugin-auto-import/vite'
-import { Arrayable, ImportsMap, KnownPresets } from 'unplugin-auto-import'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 // Automatically import 'vue', 'pinia', 'vue-router' and '@vueuse/core'
 export const AutoImportDeps = () => {
-  const importsList: Arrayable<ImportsMap | KnownPresets> | undefined = [
-    'vue',
-    'pinia',
-    'vue-router',
-    '@vueuse/core',
-    {
-      vue: ['ref as $ref'],
-    },
-  ]
+  const importsList: Array<'vue' | 'pinia' | 'vue-router' | '@vueuse/core'> = ['vue', 'pinia', 'vue-router', '@vueuse/core']
 
   const resolversList = [NaiveUiResolver()]
 

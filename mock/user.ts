@@ -64,7 +64,7 @@ export default [
     timeout: 200,
     method: 'post',
     response: (request: requestParams) => {
-      const { username, password } = request?.body
+      const { username, password } = request.body ?? {}
       const checkUser = createFakeUserList().find(
         (item) => item.user_name === username && item.password === password,
       )

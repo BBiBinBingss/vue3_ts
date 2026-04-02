@@ -7,7 +7,11 @@
  * @Description  : 
 -->
 <template>
-  <n-config-provider :theme="getDarkTheme" :locale="zhCN" :date-locale="dateZhCN" :theme-overrides="getThemeOverrides">
+  <n-config-provider
+    :theme="getDarkTheme"
+    :locale="zhCN"
+    :date-locale="dateZhCN"
+    :theme-overrides="getThemeOverrides">
     <n-message-provider>
       <MessageApi />
     </n-message-provider>
@@ -15,29 +19,29 @@
   </n-config-provider>
 </template>
 <script setup lang="ts">
-import { NMessageProvider, zhCN, darkTheme, dateZhCN } from 'naive-ui'
-import { useDesignSettingStore } from '/@/store/modules/designSetting'
-// 主题配置
-const designStore = useDesignSettingStore()
+  import { zhCN, darkTheme, dateZhCN } from 'naive-ui'
+  import { useDesignSettingStore } from '/@/store/modules/designSetting'
+  // 主题配置
+  const designStore = useDesignSettingStore()
 
-// 主题
-const getDarkTheme = computed(() => (designStore.darkTheme ? darkTheme : undefined))
+  // 主题
+  const getDarkTheme = computed(() => (designStore.darkTheme ? darkTheme : undefined))
 
-/**
- * @type import('naive-ui').GlobalThemeOverrides
- */
-const getThemeOverrides = computed(() => {
-  const appTheme = designStore.appTheme
-  return {
-    common: {
-      primaryColor: appTheme,
-      primaryColorSuppl: appTheme,
-    },
-    LoadingBar: {
-      colorLoading: appTheme,
-    },
-  }
-})
+  /**
+   * @type import('naive-ui').GlobalThemeOverrides
+   */
+  const getThemeOverrides = computed(() => {
+    const appTheme = designStore.appTheme
+    return {
+      common: {
+        primaryColor: appTheme,
+        primaryColorSuppl: appTheme,
+      },
+      LoadingBar: {
+        colorLoading: appTheme,
+      },
+    }
+  })
 </script>
 
 <style></style>

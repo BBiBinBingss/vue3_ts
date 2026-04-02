@@ -1,4 +1,5 @@
 module.exports = {
+  tabWidth: 2,
   printWidth: 100,
   semi: false,
   vueIndentScriptAndStyle: true,
@@ -6,5 +7,15 @@ module.exports = {
   trailingComma: 'all',
   proseWrap: 'never',
   htmlWhitespaceSensitivity: 'strict',
+  bracketSameLine: true,
+  arrowParens: 'always',
   endOfLine: 'auto',
+  overrides: [
+    {
+      files: '*.json',
+      options: {
+        printWidth: 200,
+      },
+    },
+  ],
 }

@@ -1,14 +1,14 @@
-import { createProdMockServer } from 'vite-plugin-mock/es/createProdMockServer'
+import { createProdMockServer } from 'vite-plugin-mock/client'
 // 批量加载
-const modules = import.meta.globEager('./mock/*.ts')
+const modules = import.meta.glob<{ default: any[] }>('./*.ts', { eager: true })
 
 const mockModules: Array<string> = []
 Object.keys(modules).forEach((key) => {
   if (key.includes('/_')) {
     return
   }
-  mockModules.push(...modules[key].default)
+  mockModules.push(...(modules[key].default || []))
 })
 export function setupProdMockServer() {
-  createProdMockServer(mockModules)
+  return createProdMockServer(mockModules)
 }

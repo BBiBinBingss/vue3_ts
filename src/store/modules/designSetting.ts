@@ -4,7 +4,7 @@
  * @LastEditors  : tangbo 852425209@qq.com
  * @LastEditTime : 2023-07-11 15:37:04
  * @FilePath     : \vue3_ts\src\store\modules\designSetting.ts
- * @Description  : 
+ * @Description  :
  */
 import { defineStore } from 'pinia'
 import { store } from '/@/store'

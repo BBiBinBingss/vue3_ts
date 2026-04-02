@@ -3,7 +3,7 @@
  * @description 开启.gz压缩
  */
 import viteCompression from 'vite-plugin-compression'
-import { COMPRESSION } from '../../constant'
+import { COMPRESSION } from '../../../mock/constant'
 
 export const ConfigCompressPlugin = () => {
   if (COMPRESSION) {

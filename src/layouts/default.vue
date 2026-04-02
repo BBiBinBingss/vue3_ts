@@ -28,16 +28,13 @@
  * @FilePath: \vue3_tsv\src\layouts\default.vue
  -->
 
-
 <template>
   <!-- <div>测试</div> -->
   <router-view />
 </template>
 
-<script setup lang="ts">
-
-</script>
+<script setup lang="ts"></script>
 
 <style lang="less" scoped>
-@import './default.less';
+  @import url('./default.less');
 </style>

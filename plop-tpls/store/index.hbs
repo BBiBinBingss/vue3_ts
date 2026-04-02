@@ -1,3 +1,7 @@
-import { defineStore } from 'pinia' import piniaStore from '@/store/index' export const use{{properCase
+import { defineStore } from 'pinia' import { store } from '/@/store' interface
+{{properCase name}}State {} export const use{{properCase name}}Store = defineStore({ id: '{{kebabCase
   name
-}}Store = defineStore('{{camelCase name}}', { state: () => ({}), getters: {}, actions: {} })
+}}', state: ():
+{{properCase name}}State => ({}), getters: {}, actions: {}, }) export function use{{properCase
+  name
+}}WithOut() { return use{{properCase name}}Store(store) }

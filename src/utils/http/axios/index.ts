@@ -24,11 +24,11 @@ const axiosInstance: AxiosInstance = axios.create({
 // Interceptor for requests
 axiosInstance.interceptors.request.use(
   (config: AxiosRequestConfig) => {
-    const token = getToken()
+    const _token = getToken()
     //if (token) config.headers.Authorization = `${TokenPrefix}${token}`
     return config
   },
-  (error: any) => Promise.reject(error)
+  (error: any) => Promise.reject(error),
 )
 
 // Interceptor for responses
@@ -48,7 +48,7 @@ axiosInstance.interceptors.response.use(
     }
     window.$message.error(showMessage('网络连接异常,请稍后再试!'))
     return Promise.reject(error)
-  }
+  },
 )
 
 const request = async <T = any>(config: AxiosRequestConfig): Promise<T> => {
