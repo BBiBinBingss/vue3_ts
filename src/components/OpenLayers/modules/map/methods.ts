@@ -12,6 +12,7 @@ import View from 'ol/View'
 import { getCenter } from 'ol/extent'
 import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
+import { randomLineString, randomPoint, randomPolygon } from '@turf/turf'
 import { defaults as defaultControls } from 'ol/control'
 import {
   createBaseLayers,
@@ -45,9 +46,45 @@ interface MockGenerateBounds {
   maxY: number
 }
 
-/** 生成 `[min, max]` 区间随机数。 */
-function randomInRange(minValue: number, maxValue: number) {
-  return minValue + Math.random() * (maxValue - minValue)
+type TurfBBox = [number, number, number, number]
+
+function buildBBox(bounds: MockGenerateBounds): TurfBBox {
+  return [bounds.minX, bounds.minY, bounds.maxX, bounds.maxY]
+}
+
+function toCoordinatePair(coordinate: unknown): [number, number] {
+  if (!Array.isArray(coordinate) || coordinate.length < 2) {
+    return [114.4, 32.8]
+  }
+
+  const longitude = Number(coordinate[0])
+  const latitude = Number(coordinate[1])
+
+  if (Number.isNaN(longitude) || Number.isNaN(latitude)) {
+    return [114.4, 32.8]
+  }
+
+  return [longitude, latitude]
+}
+
+function toLineCoordinates(coordinates: unknown): [number, number][] {
+  if (!Array.isArray(coordinates)) {
+    return []
+  }
+
+  return coordinates
+    .map((coordinate) => toCoordinatePair(coordinate))
+    .filter((coordinate) => Number.isFinite(coordinate[0]) && Number.isFinite(coordinate[1]))
+}
+
+function toPolygonCoordinates(coordinates: unknown): [number, number][][] {
+  if (!Array.isArray(coordinates)) {
+    return []
+  }
+
+  const rings = coordinates.map((ring) => toLineCoordinates(ring))
+
+  return rings.filter((ring) => ring.length >= 4)
 }
 
 /**
@@ -167,13 +204,31 @@ export function loadMockFeatures(
 
   const center = context.map.getView().getCenter() as [number, number] | null
   const baseCenter: [number, number] = center ?? [114.4, 32.8]
+  const centerBounds: MockGenerateBounds = {
+    minX: baseCenter[0] - 0.6,
+    maxX: baseCenter[0] + 0.6,
+    minY: baseCenter[1] - 0.45,
+    maxY: baseCenter[1] + 0.45,
+  }
+  const bbox = buildBBox(centerBounds)
   const result: MockFeatureItem[] = []
 
-  for (let index = 0; index < pointCount; index += 1) {
-    const coordinate: [number, number] = [
-      baseCenter[0] + ((index % 10) - 5) * 0.06,
-      baseCenter[1] + (Math.floor(index / 10) - 2) * 0.05,
-    ]
+  const pointCollection = randomPoint(pointCount, { bbox })
+  const lineCollection = randomLineString(lineCount, {
+    bbox,
+    num_vertices: 4,
+    max_length: 0.25,
+    max_rotation: Math.PI / 6,
+  })
+  const polygonCollection = randomPolygon(polygonCount, {
+    bbox,
+    num_vertices: 6,
+    max_radial_length: 0.12,
+  })
+
+  for (let index = 0; index < pointCollection.features.length; index += 1) {
+    const feature = pointCollection.features[index]
+    const coordinate = toCoordinatePair(feature.geometry.coordinates)
 
     const pointFeature = addPointFeature(context.pointSource, {
       id: `mock-point-${index + 1}`,
@@ -195,14 +250,13 @@ export function loadMockFeatures(
     })
   }
 
-  for (let index = 0; index < lineCount; index += 1) {
-    const startX = baseCenter[0] - 0.45 + index * 0.03
-    const startY = baseCenter[1] - 0.25 + (index % 5) * 0.06
-    const coordinates: [number, number][] = [
-      [startX, startY],
-      [startX + 0.18, startY + 0.08],
-      [startX + 0.32, startY + 0.02],
-    ]
+  for (let index = 0; index < lineCollection.features.length; index += 1) {
+    const feature = lineCollection.features[index]
+    const coordinates = toLineCoordinates(feature.geometry.coordinates)
+
+    if (coordinates.length < 2) {
+      continue
+    }
 
     const lineFeature = addLineFeature(context.lineSource, {
       id: `mock-line-${index + 1}`,
@@ -225,20 +279,13 @@ export function loadMockFeatures(
     })
   }
 
-  for (let index = 0; index < polygonCount; index += 1) {
-    const offsetX = -0.38 + (index % 5) * 0.17
-    const offsetY = 0.06 + Math.floor(index / 5) * 0.17
-    const left = baseCenter[0] + offsetX
-    const bottom = baseCenter[1] + offsetY
-    const polygonCoordinates: [number, number][][] = [
-      [
-        [left, bottom],
-        [left + 0.12, bottom],
-        [left + 0.12, bottom + 0.1],
-        [left, bottom + 0.1],
-        [left, bottom],
-      ],
-    ]
+  for (let index = 0; index < polygonCollection.features.length; index += 1) {
+    const feature = polygonCollection.features[index]
+    const polygonCoordinates = toPolygonCoordinates(feature.geometry.coordinates)
+
+    if (polygonCoordinates.length === 0) {
+      continue
+    }
 
     const polygonFeature = addPolygonFeature(context.polygonSource, {
       id: `mock-polygon-${index + 1}`,
@@ -282,15 +329,27 @@ export function loadMockFeaturesInViewport(
   context.polygonSource.clear()
 
   const bounds = getCurrentBounds(context)
+  const bbox = buildBBox(bounds)
   const width = bounds.maxX - bounds.minX
   const height = bounds.maxY - bounds.minY
   const result: MockFeatureItem[] = []
 
-  for (let index = 0; index < pointCount; index += 1) {
-    const coordinate: [number, number] = [
-      randomInRange(bounds.minX, bounds.maxX),
-      randomInRange(bounds.minY, bounds.maxY),
-    ]
+  const pointCollection = randomPoint(pointCount, { bbox })
+  const lineCollection = randomLineString(lineCount, {
+    bbox,
+    num_vertices: 4,
+    max_length: Math.max(width * 0.18, 0.05),
+    max_rotation: Math.PI / 5,
+  })
+  const polygonCollection = randomPolygon(polygonCount, {
+    bbox,
+    num_vertices: 7,
+    max_radial_length: Math.max(Math.min(width, height) * 0.1, 0.03),
+  })
+
+  for (let index = 0; index < pointCollection.features.length; index += 1) {
+    const feature = pointCollection.features[index]
+    const coordinate = toCoordinatePair(feature.geometry.coordinates)
 
     const pointFeature = addPointFeature(context.pointSource, {
       id: `mock-point-${index + 1}`,
@@ -312,20 +371,13 @@ export function loadMockFeaturesInViewport(
     })
   }
 
-  for (let index = 0; index < lineCount; index += 1) {
-    const startX = randomInRange(bounds.minX, bounds.maxX)
-    const startY = randomInRange(bounds.minY, bounds.maxY)
-    const coordinates: [number, number][] = [
-      [startX, startY],
-      [
-        startX + randomInRange(-width * 0.12, width * 0.12),
-        startY + randomInRange(-height * 0.12, height * 0.12),
-      ],
-      [
-        startX + randomInRange(-width * 0.2, width * 0.2),
-        startY + randomInRange(-height * 0.2, height * 0.2),
-      ],
-    ]
+  for (let index = 0; index < lineCollection.features.length; index += 1) {
+    const feature = lineCollection.features[index]
+    const coordinates = toLineCoordinates(feature.geometry.coordinates)
+
+    if (coordinates.length < 2) {
+      continue
+    }
 
     const lineFeature = addLineFeature(context.lineSource, {
       id: `mock-line-${index + 1}`,
@@ -348,20 +400,19 @@ export function loadMockFeaturesInViewport(
     })
   }
 
-  for (let index = 0; index < polygonCount; index += 1) {
-    const rectWidth = width * randomInRange(0.04, 0.09)
-    const rectHeight = height * randomInRange(0.04, 0.09)
-    const left = randomInRange(bounds.minX, bounds.maxX - rectWidth)
-    const bottom = randomInRange(bounds.minY, bounds.maxY - rectHeight)
-    const polygonCoordinates: [number, number][][] = [
-      [
-        [left, bottom],
-        [left + rectWidth, bottom],
-        [left + rectWidth, bottom + rectHeight],
-        [left, bottom + rectHeight],
-        [left, bottom],
-      ],
-    ]
+  for (let index = 0; index < polygonCollection.features.length; index += 1) {
+    const feature = polygonCollection.features[index]
+    const polygonCoordinates = toPolygonCoordinates(feature.geometry.coordinates)
+
+    if (polygonCoordinates.length === 0) {
+      continue
+    }
+
+    const ring = polygonCoordinates[0]
+    const xs = ring.map((coordinate) => coordinate[0])
+    const ys = ring.map((coordinate) => coordinate[1])
+    const rectWidth = Math.max(...xs) - Math.min(...xs)
+    const rectHeight = Math.max(...ys) - Math.min(...ys)
 
     const polygonFeature = addPolygonFeature(context.polygonSource, {
       id: `mock-polygon-${index + 1}`,

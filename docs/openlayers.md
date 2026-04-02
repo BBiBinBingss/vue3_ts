@@ -70,12 +70,12 @@ const mapContext = createMap({
 ### 3) 添加点、线、面
 
 ```ts
-addPointFeature(mapContext.vectorSource, {
+addPointFeature(mapContext.pointSource, {
   coordinate: [114.4, 32.8],
   style: { radius: 7, fillColor: 'rgba(250, 84, 28, 0.9)' },
 })
 
-addLineFeature(mapContext.vectorSource, {
+addLineFeature(mapContext.lineSource, {
   coordinates: [
     [114.2, 32.6],
     [114.4, 32.8],
@@ -84,7 +84,7 @@ addLineFeature(mapContext.vectorSource, {
   style: { strokeColor: '#13c2c2', strokeWidth: 3, lineDash: [8, 4] },
 })
 
-addPolygonFeature(mapContext.vectorSource, {
+addPolygonFeature(mapContext.polygonSource, {
   coordinates: [
     [
       [114.1, 32.5],
@@ -112,10 +112,38 @@ destroyMap(mapContext)
 - `line`：线要素增删改
 - `polygon`：面要素增删改
 
+## Turf 随机生成
+
+项目已接入 `@turf/turf`，用于随机生成点线面 mock：
+
+- 点：`randomPoint`
+- 线：`randomLineString`
+- 面：`randomPolygon`
+
+当前提供两种生成模式：
+
+- 中心模式：围绕当前地图中心生成稳定范围数据
+- 视野模式：严格在当前视窗 bbox 内随机生成数据
+
+对应集成方法位于 `modules/map/methods.ts`：
+
+- `loadMockFeatures`
+- `loadMockFeaturesInViewport`
+
 ## 底图策略
 
 - 配置了 `VITE_APP_TDT_URL` 和 `VITE_APP_TOKEN` 时，使用天地图 WMTS
 - 未配置时自动降级到 OSM
+
+### 底图切换示例（已扩展）
+
+- 矢量（含注记）
+- 矢量（仅底图）
+- 影像（含注记）
+- 影像（仅底图）
+- 地形（含注记）
+- 地形（仅底图）
+- OSM
 
 ## 维护建议
 

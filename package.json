@@ -30,6 +30,7 @@
     "deps": "pnpm update --interactive --latest"
   },
   "dependencies": {
+    "@turf/turf": "^7.3.4",
     "@vueuse/components": "^14.2.1",
     "@vueuse/core": "^14.2.1",
     "axios": "^0.27.2",

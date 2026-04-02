@@ -114,18 +114,33 @@ export function getAvailableBaseMapPresets(): BaseMapPresetOption[] {
   return [
     {
       key: 'vector',
-      label: '矢量图',
+      label: '矢量(含注记)',
       layerNames: ['矢量图', '矢量图标注'],
     },
     {
+      key: 'vector-base',
+      label: '矢量(底图)',
+      layerNames: ['矢量图'],
+    },
+    {
       key: 'image',
-      label: '影像图',
+      label: '影像(含注记)',
       layerNames: ['影像图', '影像图标注'],
     },
     {
+      key: 'image-base',
+      label: '影像(底图)',
+      layerNames: ['影像图'],
+    },
+    {
       key: 'terrain',
-      label: '地形图',
+      label: '地形(含注记)',
       layerNames: ['地形图', '地形图标注'],
+    },
+    {
+      key: 'terrain-base',
+      label: '地形(底图)',
+      layerNames: ['地形图'],
     },
     {
       key: 'osm',

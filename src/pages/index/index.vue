@@ -109,7 +109,7 @@
     switchBaseMap: (presetKey: BaseMapPresetKey) => void
   }
 
-  type BaseMapPresetKey = 'vector' | 'image' | 'terrain' | 'osm'
+  type BaseMapPresetKey = string
 
   interface BaseMapPresetOption {
     key: BaseMapPresetKey

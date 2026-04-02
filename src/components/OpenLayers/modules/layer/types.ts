@@ -20,7 +20,14 @@ export interface TdtConfig {
 }
 
 /** 底图预设主键。 */
-export type BaseMapPresetKey = 'vector' | 'image' | 'terrain' | 'osm'
+export type BaseMapPresetKey =
+  | 'vector'
+  | 'vector-base'
+  | 'image'
+  | 'image-base'
+  | 'terrain'
+  | 'terrain-base'
+  | 'osm'
 
 /** 底图预设项，用于页面切换按钮与逻辑映射。 */
 export interface BaseMapPresetOption {
