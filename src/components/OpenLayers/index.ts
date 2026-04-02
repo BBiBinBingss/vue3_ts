@@ -6,39 +6,40 @@
  * @FilePath     : \vue3_ts\src\components\OpenLayers\index.ts
  * @Description  :
  */
-import { h, defineComponent, onMounted } from 'vue'
+import { defineComponent, h, onMounted, shallowRef } from 'vue'
 import Container from './utils/Container'
 import { toggleLayerVisibility } from './utils/ControlLayerVisibility'
-import { useStyles } from './utils/useStyles'
-// 导入图层
-import { viewerSettingStore } from '/@/store/modules/viewerSetting'
-// 基本配置
-import { basicSettingStore } from '/@/store/modules/basicSetting'
+import { defaultVisibleLayerNames } from './utils/Layer'
+import type { MapViewSettings } from './utils/View'
+
+const defaultViewSettings: MapViewSettings = {
+  Projection: 'EPSG:4326',
+  Coordinate: [114.4, 32.8],
+  zoomTo: 7,
+}
+
+const mapStyle = {
+  width: '100vw',
+  height: '100vh',
+  overflow: 'hidden',
+  position: 'relative',
+} as const
 
 export default defineComponent({
   name: 'OpenLayers',
 
   setup() {
-    // DOM和样式的引用
-    const map = ref<Container | null>(null)
-    const styles = useStyles()
-
-    // 直接从store中提取所需的状态
-    const { ErlMergeViewer } = viewerSettingStore()
-    const basicSetting = basicSettingStore()
+    const map = shallowRef<Container | null>(null)
 
     onMounted(async () => {
       try {
-        // 初始化地图容器
-        map.value = new Container('map', basicSetting)
-        // 切换图层可见性
-        toggleLayerVisibility(map.value, ErlMergeViewer)
+        map.value = new Container('openlayers-map', defaultViewSettings)
+        toggleLayerVisibility(map.value, defaultVisibleLayerNames)
       } catch (error) {
-        // 错误处理
         console.error('初始化OpenLayers时出错:', error)
       }
     })
 
-    return () => h('div', { id: 'map', class: styles.value.map })
+    return () => h('div', { id: 'openlayers-map', style: mapStyle })
   },
 })

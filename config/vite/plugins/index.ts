@@ -10,12 +10,9 @@
  * @name createVitePlugins
  * @description 封装plugins数组统一调用
  */
-import type { Plugin } from 'vite'
+import type { PluginOption } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueJsx from '@vitejs/plugin-vue-jsx'
 import windiCSS from 'vite-plugin-windicss'
-import VitePluginCertificate from 'vite-plugin-mkcert'
-import vueSetupExtend from 'vite-plugin-vue-setup-extend'
 import { ConfigSvgIconsPlugin } from './svgIcons'
 import { AutoRegistryComponents } from './component'
 import { AutoImportDeps } from './autoImport'
@@ -23,25 +20,19 @@ import { ConfigMockPlugin } from './mock'
 import { ConfigVisualizerConfig } from './visualizer'
 import { ConfigCompressPlugin } from './compress'
 import { ConfigPagesPlugin } from './pages'
-import { ConfigRestartPlugin } from './restart'
 import { ConfigProgressPlugin } from './progress'
 import { createTitlePlugin } from './plugintitle'
 import { ConfigLayoutsPlugin } from './layouts'
+import { ConfigRestartPlugin } from './restart'
 
-export function createVitePlugins(isBuild: boolean, mode: string) {
-  const vitePlugins: (Plugin | Plugin[])[] = [
+export async function createVitePlugins(isBuild: boolean, mode: string) {
+  const { default: vueJsx } = await import('@vitejs/plugin-vue-jsx')
+
+  const vitePlugins: PluginOption[] = [
     // vue支持
-    vue({
-      reactivityTransform: true,
-    }),
-    // JSX支持
+    vue(),
+    // JSX/TSX支持
     vueJsx(),
-    // 提供https证书
-    // VitePluginCertificate({
-    //   source: 'coding',
-    // }),
-    // setup语法糖组件名支持
-    vueSetupExtend(),
     // 自动按需引入组件
     AutoRegistryComponents(),
     // 自动按需引入依赖
@@ -52,10 +43,10 @@ export function createVitePlugins(isBuild: boolean, mode: string) {
     ConfigLayoutsPlugin(),
     // 开启.gz压缩  rollup-plugin-gzip
     ConfigCompressPlugin(),
-    // 监听配置文件改动重启
-    ConfigRestartPlugin(),
     // 构建时显示进度条
     ConfigProgressPlugin(),
+    // 监听配置文件改动重启
+    await ConfigRestartPlugin(),
     // 页面title
     createTitlePlugin(mode),
   ]

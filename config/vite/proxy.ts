@@ -1,9 +1,9 @@
 /*
  * @Author       : tangbo 852425209@qq.com
  * @Date         : 2023-02-18 00:27:23
- * @LastEditors: BBiBinBings 
- * @LastEditTime: 2025-02-23 22:34:06
- * @FilePath: \vue3_tsv\config\vite\proxy.ts
+ * @LastEditors  : tangbo 852425209@qq.com
+ * @LastEditTime : 2023-03-07 11:10:42
+ * @FilePath     : \vue3_ts\config\vite\proxy.ts
  * @Description  :
  */
 import {
@@ -11,7 +11,7 @@ import {
   API_TARGET_URL,
   MOCK_API_BASE_URL,
   MOCK_API_TARGET_URL,
-} from '../../config/constant'
+} from '../../mock/constant'
 import { ProxyOptions } from 'vite'
 type ProxyTargetList = Record<string, ProxyOptions>
 

@@ -1,8 +1,8 @@
-import { get, post } from '/@/utils/http/axios'
+import { post } from '/@/utils/http/axios'
 
 enum URL {
   login = '/user/login',
-  logout = '/user/logout', 
+  logout = '/user/logout',
 }
 interface LoginRes {
   token: string
@@ -15,6 +15,5 @@ export interface LoginData {
 
 const login = async (data: LoginData) => post<any>({ url: URL.login, data })
 const logout = async () => post<LoginRes>({ url: URL.logout })
- 
 
 export { logout, login }

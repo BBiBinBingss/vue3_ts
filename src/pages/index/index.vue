@@ -8,17 +8,13 @@
 -->
 
 <template>
-  <div>
-    <open-layers />
-  </div>
+  <OpenLayers />
 </template>
 
-<script lang="ts" setup>
-import OpenLayers from '/@/components/OpenLayers'
-
-let i = $ref(0)
+<script setup lang="ts">
+  import OpenLayers from '../../components/OpenLayers/index'
 </script>
 
 <style lang="less" scoped>
-@import './index.less';
+  @import url('./index.less');
 </style>

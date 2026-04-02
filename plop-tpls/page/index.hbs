@@ -1,12 +1,15 @@
 <template>
-  <div>
-    <div class='{{properCase name}}'></div>
-
+  <div class='{{kebabCase name}}-page'>
+    {{#if withPageComponents}}<PageComponent />{{/if}}
   </div>
 </template>
+
 <script lang='ts' setup>
+  {{#if withPageComponents}}import PageComponent from './components/{{properCase
+      pageComponentName
+    }}/index.vue'{{/if}}
 </script>
 
 <style lang='less' scoped>
-  @import './index.less';
+  @import url('./index.less');
 </style>

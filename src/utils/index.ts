@@ -15,21 +15,21 @@
 
 export const imageUrlToBase64 = (imageUrl: string): Promise<string> => {
   return new Promise((resolve, reject) => {
-    let image = new Image()
+    const image = new Image()
     image.setAttribute('crossOrigin', 'anonymous')
     image.src = imageUrl
     image.onload = () => {
       try {
-        let canvas = document.createElement('canvas')
+        const canvas = document.createElement('canvas')
         canvas.width = image.width
         canvas.height = image.height
-        let context = canvas.getContext('2d')
+        const context = canvas.getContext('2d')
         if (!context) {
           throw new Error('Unable to get 2D context')
         }
         context.drawImage(image, 0, 0, image.width, image.height)
-        let quality = 0.8
-        let dataURL = canvas.toDataURL('image/jpeg', quality)
+        const quality = 0.8
+        const dataURL = canvas.toDataURL('image/jpeg', quality)
         resolve(dataURL)
       } catch (error) {
         reject(error)

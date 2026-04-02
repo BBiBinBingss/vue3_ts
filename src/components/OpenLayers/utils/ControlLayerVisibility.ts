@@ -7,26 +7,27 @@
  * @Description  :  切换图层控制
  */
 
+import type Container from './Container'
+
 /**
  * 切换图层的可见性
- * @param {any} map - 地图对象
- * @param {string[] | { [s: string]: unknown } | ArrayLike<unknown>} val - 图层名称或其他类型的值列表
+ * @param {Container | null} map - 地图对象
+ * @param {string[]} val - 图层名称列表
  */
-export function toggleLayerVisibility(
-  map: any,
-  val: string[] | { [s: string]: unknown } | ArrayLike<unknown>
-) {
-  // 获取地图上的所有图层
-  const layers = map.container.getLayers()
-  // 如果val是数组，则直接使用；如果是对象，则获取其值数组
-  const values = Array.isArray(val) ? val : Object.values(val)
-  // 遍历每个图层
-  layers.forEach((layer: any) => {
-    // 获取图层的名称
+export function toggleLayerVisibility(map: Container | null, val: string[]) {
+  if (!map) {
+    return
+  }
+
+  const layers = map.container.getLayers().getArray()
+
+  layers.forEach((layer) => {
     const layerName = layer.getClassName()
-    // 创建一个正则表达式来检查是否包含中文字符
     const reg = new RegExp('[\\u4E00-\\u9FFF]+', 'g')
-    // 如果图层名称包含中文，则根据值列表来设置其可见性；否则，默认设置为可见
-    reg.test(layerName) ? layer.setVisible(values.includes(layerName)) : layer.setVisible(true)
+    if (reg.test(layerName)) {
+      layer.setVisible(val.includes(layerName))
+    } else {
+      layer.setVisible(true)
+    }
   })
 }

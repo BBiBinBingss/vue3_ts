@@ -6,33 +6,23 @@
  * @FilePath     : \vue3_ts\src\components\OpenLayers\utils\container.ts
  * @Description  : 初始化地图
  */
-
-import map from 'ol/Map'
+import OLMap from 'ol/Map'
 import { layer } from './Layer'
-import { SwingMonthView } from './View'
+import { SwingMonthView, type MapViewSettings } from './View'
 import { controls } from './Controls'
 
 export default class Container {
-  public container: any
+  public container: OLMap
 
-  constructor(containerSelector: string | HTMLElement | undefined, basicLayer: any) {
-    // 当构造器被调用时，直接初始化地图
+  constructor(containerSelector: string | HTMLElement, basicLayer: MapViewSettings) {
     this._initMap(containerSelector, basicLayer)
   }
 
-  /**
-   * 初始化地图
-   * @param {string | HTMLElement | undefined} containerSelector - 地图容器的选择器或元素
-   * @param {any} basicLayer - 基础图层信息
-   */
-  _initMap(containerSelector: string | HTMLElement | undefined, basicLayer: any) {
-    this.container = new map({
+  _initMap(containerSelector: string | HTMLElement, basicLayer: MapViewSettings) {
+    this.container = new OLMap({
       target: containerSelector,
-      // 将图层对象的值提取为数组
       layers: Object.values(Object.assign(layer, {})),
-      // 使用基础图层信息创建视图
       view: SwingMonthView(basicLayer),
-      // 设置地图控制
       controls: controls,
     })
   }

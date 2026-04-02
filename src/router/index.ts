@@ -18,7 +18,7 @@ type ExtendedRouteRecordRaw = RouteRecordRaw & {
   }
 }
 const routes: Array<ExtendedRouteRecordRaw> = generatedRoutes.map((v: ExtendedRouteRecordRaw) =>
-  v.meta?.layout !== false ? setupLayouts([v])[0] : v
+  v.meta?.layout !== false ? setupLayouts([v])[0] : v,
 )
 
 const router = createRouter({

@@ -6,19 +6,19 @@
  * @FilePath     : \vue3_ts\vite.config.ts
  * @Description  :
  */
-import { UserConfig, ConfigEnv } from 'vite'
+import type { UserConfig, ConfigEnv } from 'vite'
 import { createVitePlugins } from './config/vite/plugins'
 import { resolve } from 'path'
 import proxy from './config/vite/proxy'
-import { VITE_DROP_CONSOLE, VITE_PORT } from './config/constant'
+import { VITE_DROP_CONSOLE, VITE_PORT } from './mock/constant'
 
 function pathResolve(dir: string) {
   return resolve(process.cwd(), '.', dir)
 }
 
-export default ({ command, mode }: ConfigEnv): UserConfig => {
+export default async ({ command, mode }: ConfigEnv): Promise<UserConfig> => {
   const isBuild = command === 'build'
-  console.log(command, mode)
+
   return {
     resolve: {
       alias: [
@@ -35,7 +35,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       ],
     },
     // 插件
-    plugins: createVitePlugins(isBuild, mode),
+    plugins: await createVitePlugins(isBuild, mode),
 
     // CSS
     css: {
@@ -73,9 +73,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       rollupOptions: {
         external: [],
       },
-      watch: {},
-
-      brotliSize: false,
+      reportCompressedSize: false,
       chunkSizeWarningLimit: 2000,
     },
   }

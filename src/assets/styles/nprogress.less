@@ -17,12 +17,14 @@
 #nprogress .peg {
   display: block;
   position: absolute;
-  right: 0px;
+  right: 0;
   width: 6.25rem;
   height: 100%;
-  box-shadow: 0 0 0.625rem #29d, 0 0 0.3125rem #29d;
+  box-shadow:
+    0 0 0.625rem #29d,
+    0 0 0.3125rem #29d;
   opacity: 1;
-  transform: rotate(3deg) translate(0px, -0.25rem);
+  transform: rotate(3deg) translate(0, -0.25rem);
 }
 
 /* Remove these to get rid of the spinner */
@@ -42,7 +44,6 @@
   border-top-color: #29d;
   border-left-color: #29d;
   border-radius: 50%;
-
   animation: nprogress-spinner 400ms linear infinite;
 }
 
@@ -60,6 +61,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }

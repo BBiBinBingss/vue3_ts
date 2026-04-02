@@ -1,439 +1,194 @@
-## 基础框架
+# Vue3 + TypeScript + OpenLayers 基础框架
+
+基于 `Vue 3.5`、`Vite 6`、`TypeScript 5`、`Pinia`、`Naive UI` 的通用前端项目模板，适合业务应用、官网/活动页和中后台以外场景，内置自动路由、自动导入、布局系统、Mock、打包压缩和包体积分析能力。
+
+## 技术栈
+
+- `vue@3.5`
+- `vite@6`
+- `typescript@5.9`
+- `vue-router@4.6`
+- `pinia@2.3`
+- `naive-ui@2.44`
+- `ol@7`
+- `unplugin-auto-import`
+- `unplugin-vue-components`
+- `vite-plugin-pages`
+- `vite-plugin-vue-layouts`
+- `vite-plugin-mock`
+- `vite-plugin-compression`
+- `rollup-plugin-visualizer`
+
+## 环境要求
+
+- `Node.js >= 20.18`
+- `pnpm >= 10`
+
+## 快速开始
+
+```zsh
+pnpm run bootstrap
+pnpm dev
+```
+
+## 常用命令
+
+```zsh
+pnpm run bootstrap
+pnpm run plop
+pnpm dev
+pnpm run dev:host -- 127.0.0.1
+pnpm build
+pnpm build:dev
+pnpm build:pro
+pnpm build:analyze
+pnpm preview
+pnpm exec vue-tsc --noEmit
+pnpm lint:eslint
+pnpm lint:prettier
+pnpm lint:stylelint
+pnpm plop
+```
+
+## 构建说明
+
+- `pnpm build`：标准生产构建，构建完成后正常退出。
+- `pnpm build:analyze`：生成包体积分析文件 `node_modules/.cache/visualizer/stats.html`，默认不会自动打开浏览器。
+- `pnpm preview`：本地预览 `dist` 构建结果。
+
+## 构建优化
+
+本项目已做以下构建侧优化：
+
+- 默认关闭包分析自动打开，避免 `build` 阶段额外打断。
+- 保留 `gzip` 压缩能力，减少静态资源体积。
+- 保留 `jsx/tsx` 支持，兼容混合写法场景。
+- 使用 `postcss-px-to-viewport-8-plugin`，兼容 `PostCSS 8`，消除旧插件废弃警告。
+- 关闭 `reportCompressedSize`，减少常规构建统计开销。
+
+## 可调构建开关
+
+以下开关定义在 `mock/constant.ts`，并支持通过环境变量覆盖：
+
+- `ANALYSIS`：是否生成包分析报告，默认 `false`
+- `COMPRESSION`：是否生成 `.gz` 压缩文件，默认 `true`
+- `VITE_DROP_CONSOLE`：生产构建是否移除 `console`，默认 `true`
+
+例如：
+
+```zsh
+ANALYSIS=true pnpm build
+COMPRESSION=false pnpm build
+VITE_DROP_CONSOLE=false pnpm build
+```
+
+推荐直接使用已封装脚本：
+
+```zsh
+pnpm build:analyze
+```
 
 ## 目录结构
 
-以下是系统的目录结构
-
-```
-├── config
-│   ├── vite             // vite配置
-│   ├── constant         // 系统常量
-|   └── themeConfig      // 主题配置
-├── docs                 // 文档相关
-├── mock                 // mock数据
-├── plop-tpls            // plop模板
-├── src
-│    ├── api             // api请求
-│    ├── assets          // 静态文件
-│    ├── components      // 业务通用组件
-│    ├── page            // 业务页面
-│    ├── router          // 路由文件
-│    ├── store           // 状态管理
-│    ├── utils           // 工具类
-│    ├── App.vue         // vue模板入口
-│    ├── main.ts         // vue模板js
-├── .d.ts                // 类型定义
-├── tailwind.config.js   // tailwind全局配置
-├── tsconfig.json        // ts配置
-└── vite.config.ts       // vite全局配置
-```
-
-## 💕 支持 JSX 语法
-
-```json
-{
-    ...
-    "@vitejs/plugin-vue-jsx": "^1.3.10"
-    ...
-}
+```text
+.
+├── config/
+│   └── vite/
+│       └── plugins/        # Vite 插件拆分配置
+├── mock/                   # Mock 数据与构建开关
+├── plop-tpls/              # plop 模板
+├── public/
+├── src/
+│   ├── api/                # 接口层
+│   ├── assets/             # 静态资源与样式
+│   ├── components/         # 公共组件
+│   ├── layouts/            # 布局组件
+│   ├── pages/              # 页面目录（自动生成路由）
+│   ├── router/             # 路由入口
+│   ├── settings/           # 业务配置
+│   ├── store/              # Pinia 状态
+│   ├── utils/              # 工具方法
+│   ├── App.vue
+│   └── main.ts
+├── types/                  # 自动生成和项目类型声明
+├── postcss.config.js
+├── scripts/                # 依赖安装与清理脚本
+├── tsconfig.json
+├── vite.config.ts
+└── package.json
 ```
 
-## 🎸UI 组件按需加载，自动导入
+## OpenLayers 说明
 
-```typescript
-//模块化写法
-import Components from 'unplugin-vue-components/vite'
-import { ElementPlusResolver, VueUseComponentsResolver } from 'unplugin-vue-components/resolvers'
-export const AutoRegistryComponents = () => {
-  return Components({
-    // dirs: ['src/components'],
-    extensions: ['vue', 'md'],
-    deep: true,
-    dts: 'types/components.d.ts',
-    directoryAsNamespace: false,
-    globalNamespaces: [],
-    directives: true,
-    include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
-    exclude: [/[\\/]node_modules[\\/]/, /[\\/]\.git[\\/]/, /[\\/]\.nuxt[\\/]/],
-    resolvers: [ElementPlusResolver(), VueUseComponentsResolver()],
-  })
-}
+- `OpenLayers` 基础组件位于 `src/components/OpenLayers/`。
+- 首页 `src/pages/index/index.vue` 默认接入 `OpenLayers` 地图容器。
+- 若配置了 `VITE_APP_TDT_URL` 和 `VITE_APP_TOKEN`，会优先使用天地图底图；未配置时回退到 `OpenStreetMap`。
+- 当前分支在目录骨架上与 `master` 保持一致，仅额外保留 `OpenLayers` 组件目录与相关接入代码。
+
+## 核心能力
+
+### 自动路由
+
+- 页面文件位于 `src/pages`
+- 路由由 `vite-plugin-pages` 自动生成
+- 当前使用 `nuxt` 风格路由命名策略
+
+### 布局系统
+
+- 布局文件位于 `src/layouts`
+- 使用 `vite-plugin-vue-layouts` 自动注入布局
+- 默认布局为 `default`
+
+### 自动导入
+
+- `vue`
+- `pinia`
+- `vue-router`
+- `@vueuse/core`
+- `Naive UI` 组件与 API
+
+相关声明文件会生成到：
+
+- `types/auto-imports.d.ts`
+- `types/components.d.ts`
+
+### Mock 能力
+
+- 开发环境默认启用 `vite-plugin-mock`
+- Mock 文件位于 `mock/`
+- 以下划线 `_` 开头的文件会被忽略
+
+## 开发建议
+
+- 新增页面时优先放到 `src/pages/`
+- 新增布局时放到 `src/layouts/`
+- 新增通用组件可放到 `src/components/`
+- 使用 `pnpm plop` 快速生成页面、组件、store 模板
+
+## 升级记录
+
+本次已完成：
+
+- 升级到 `Vue 3.5`
+- 升级到 `Vite 6`
+- 升级 `TypeScript`、`vue-tsc`、`Naive UI`、`VueUse`、自动导入和路由相关插件
+- 修复 `vite build` 构建完成不退出的问题
+- 保留并兼容 `@vitejs/plugin-vue-jsx`
+- 更新 `PostCSS` viewport 插件，消除废弃警告
+- 调整分析插件为按需启用，避免每次构建自动弹出分析页
+
+## 已知说明
+
+- 如果出现 `Browserslist: browsers data is old`，可执行以下命令刷新数据库：
+
+```zsh
+pnpm dlx update-browserslist-db@latest
 ```
 
-## 🧩Vite 插件模块化
+- `rollup-plugin-visualizer` 报告文件默认输出到：
 
-为了方便管理插件，将所有的`config`统一放入`config/vite/plugins`里面，未来还会有更多插件直接分文件夹管理十分干净。值得一提的是，`Fast-Vue3`增加了统一环境变量管理，来区分动态开启某些插件。
-
-```typescript
-// vite/plugins/index.ts
-/**
- * @name createVitePlugins
- * @description 封装plugins数组统一调用
- */
-import type { Plugin } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import vueJsx from '@vitejs/plugin-vue-jsx'
-import { ConfigSvgIconsPlugin } from './svgIcons'
-import { AutoRegistryComponents } from './component'
-import { AutoImportDeps } from './autoImport'
-import { ConfigMockPlugin } from './mock'
-import { ConfigVisualizerConfig } from './visualizer'
-import { ConfigCompressPlugin } from './compress'
-import { ConfigPagesPlugin } from './pages'
-import { ConfigMarkDownPlugin } from './markdown'
-import { ConfigRestartPlugin } from './restart'
-
-export function createVitePlugins(isBuild: boolean) {
-  const vitePlugins: (Plugin | Plugin[])[] = [
-    // vue支持
-    vue(),
-    // JSX支持
-    vueJsx(),
-    // 自动按需引入组件
-    AutoRegistryComponents(),
-    // 自动按需引入依赖
-    AutoImportDeps(),
-    // 自动生成路由
-    ConfigPagesPlugin(),
-    // 开启.gz压缩  rollup-plugin-gzip
-    ConfigCompressPlugin(),
-    //支持markdown
-    ConfigMarkDownPlugin(),
-    // 监听配置文件改动重启
-    ConfigRestartPlugin(),
-  ]
-  // vite-plugin-svg-icons
-  vitePlugins.push(ConfigSvgIconsPlugin(isBuild))
-  // vite-plugin-mock
-  vitePlugins.push(ConfigMockPlugin(isBuild))
-  // rollup-plugin-visualizer
-  vitePlugins.push(ConfigVisualizerConfig())
-  return vitePlugins
-}
+```text
+node_modules/.cache/visualizer/stats.html
 ```
 
-而`vite.config.ts`便干净多了
-
-```typescript
-import { createVitePlugins } from './config/vite/plugins'
-...
-return {
-    resolve: {
-      alias: [
-        {
-          find: 'vue-i18n',
-          replacement: 'vue-i18n/dist/vue-i18n.cjs.js',
-        },
-        // /@/xxxx => src/xxxx
-        {
-          find: /\/@\//,
-          replacement: pathResolve('src') + '/',
-        },
-        // /#/xxxx => types/xxxx
-        {
-          find: /\/#\//,
-          replacement: pathResolve('types') + '/',
-        },
-      ],
-    },
-    // plugins
-    plugins: createVitePlugins(isBuild)
-}
-...
-```
-
-## 📱 支持`Pinia` ,下一代`Vuex5`
-
-创建文件`src/store/index.ts`
-
-```typescript
-// 支持模块化，配合plop可以通过命令行一键生成
-import { createPinia } from 'pinia'
-import { useAppStore } from './modules/app'
-import { useUserStore } from './modules/user'
-const pinia = createPinia()
-export { useAppStore, useUserStore }
-export default pinia
-```
-
-创建文件`src/store/modules/user/index.ts`
-
-```typescript
-import { defineStore } from 'pinia'
-import piniaStore from '@/store'
-export const useUserStore = defineStore(
-  // 唯一ID
-  'user',
-  {
-    state: () => ({}),
-    getters: {},
-    actions: {},
-  }
-)
-```
-
-## 🤖 支持`Plop`自动生成文件
-
-⚙️ 代码文件自动生成，提供三种预设模板`pages`,`components`,`store`，也可以根据自己需要设计更多自动生成脚本。一般后端同学惯用此形式，十分高效。
-
-```shell
-# 安装plop
-pnpm add plop
-```
-
-根目录创建`plopfile.ts`
-
-```typescript
-import { NodePlopAPI } from 'plop'
-export default function (plop: NodePlopAPI) {
-  plop.setWelcomeMessage('请选择需要创建的模式：')
-  plop.setGenerator('page', require('./plop-tpls/page/prompt'))
-  plop.setGenerator('component', require('./plop-tpls/component/prompt'))
-  plop.setGenerator('store', require('./plop-tpls/store/prompt'))
-}
-```
-
-```shell
-# 启动命令
-pnpm run plop
-```
-
-![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a6756aebd4d6407e8545eed41b6e5864~tplv-k3u1fbpfcp-watermark.image?)
-
-## 🖼️ 支持`SVG`图标
-
-随着浏览器兼容性的提升，SVG 的性能逐渐凸显，很多大厂团队都在创建自己的 SVG 管理库，后面工具库会有推荐。
-
-```shell
-# 安装svg依赖
-pnpm add vite-plugin-svg-icons
-```
-
-配置`vite.config.ts`
-
-```typescript
-import viteSvgIcons from 'vite-plugin-svg-icons';
-export default defineConfig({
-plugins:[
-...
- viteSvgIcons({
-    // 指定需要缓存的图标文件夹
-    iconDirs: [path.resolve(process.cwd(), 'src/assets/icons')],
-    // 指定symbolId格式
-    symbolId: 'icon-[dir]-[name]',
-  }),
-]
-...
-})
-```
-
-已封装一个简单的`SvgIcon`组件，可以直接读取文件下的`svg`，可以根据文件夹目录自动查找文件。
-
-```html
-<template>
-  <svg aria-hidden="true" class="svg-icon-spin" :class="calsses">
-    <use :xlink:href="symbolId" :fill="color" />
-  </svg>
-</template>
-
-<script lang="ts" setup>
-  const props = defineProps({
-    prefix: {
-      type: String,
-      default: 'icon',
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    color: {
-      type: String,
-      default: '#333',
-    },
-    size: {
-      type: String,
-      default: 'default',
-    },
-  })
-  const symbolId = computed(() => `#${props.prefix}-${props.name}`)
-  const calsses = computed(() => {
-    return {
-      [`sdms-size-${props.size}`]: props.size,
-    }
-  })
-  const fontSize = reactive({ default: '32px', small: '20px', large: '48px' })
-</script>
-```
-
-## 📦 支持`axios(ts版)`
-
-已封装了主流的拦截器，请求调用等方法，区分了模块`index.ts`/`status.ts`/`type.ts`
-
-```typescript
-//封装src/api/user/index.ts
-import request from '@utils/http/axios'
-import { IResponse } from '@utils/http/axios/type'
-import { ReqAuth, ReqParams, ResResult } from './type'
-enum URL {
-  login = '/v1/user/login',
-  permission = '/v1/user/permission',
-  userProfile = 'mock/api/userProfile',
-}
-const getUserProfile = async () => request<ReqAuth>({ url: URL.userProfile })
-const login = async (data: ReqParams) => request({ url: URL.login, data })
-const permission = async () => request<ReqAuth>({ url: URL.permission })
-export default { getUserProfile, login, permission }
-```
-
-```typescript
-//调用
-import userApi from '@api/user'
-// setup模式下组件可以直接引用
-const res = await userApi.profile()
-```
-
-## 👽 自动生成`router`，过滤`components`组件
-
-支持`vue-router4.0`的模块化，通过检索 pages 文件夹可自动生成路由，并支持动态路由
-
-```typescript
-import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
-import routes from 'virtual:generated-pages'
-
-console.log(routes, '打印生成自动生成的路由')
-//导入生成的路由数据
-const router = createRouter({
-  history: createWebHashHistory(),
-  routes,
-})
-
-export default router
-```
-
-## 🧬 支持 Mock 数据
-
-使用`vite-plugin-mock`插件，支持自动区分和启停的环境配置
-
-```javascript
-// vite config
-viteMockServe({
-  ignore: /^\_/,
-  mockPath: 'mock',
-  localEnabled: !isBuild,
-  prodEnabled: false,
-  // https://github.com/anncwb/vite-plugin-mock/issues/9
-  injectCode: `
-       import { setupProdMockServer } from '../mock/_createProdMockServer';
-       setupProdMockServer();
-       `,
-})
-```
-
-根目录下创建 `_createProductionServer.ts`文件,非`_`开头文件会被自动加载成 mock 文件
-
-```typescript
-import { createProdMockServer } from 'vite-plugin-mock/es/createProdMockServer'
-// 批量加载
-const modules = import.meta.globEager('./mock/*.ts')
-
-const mockModules: Array<string> = []
-Object.keys(modules).forEach((key) => {
-  if (key.includes('/_')) {
-    return
-  }
-  mockModules.push(...modules[key].default)
-})
-export function setupProdMockServer() {
-  createProdMockServer(mockModules)
-}
-```
-
-## 🎎Proxy 代理
-
-```typescript
-// vite config
-import proxy from '@config/vite/proxy';
-export default defineConfig({
-    ...
-    server: {
-        hmr: { overlay: false }, // 禁用或配置 HMR 连接 设置 server.hmr.overlay 为 false 可以禁用服务器错误遮罩层
-        // 服务配置
-        port: VITE_PORT, // 类型： number 指定服务器端口;
-        open: false, // 类型： boolean | string在服务器启动时自动在浏览器中打开应用程序；
-        cors: false, // 类型： boolean | CorsOptions 为开发服务器配置 CORS。默认启用并允许任何源
-        host: '0.0.0.0', // IP配置，支持从IP启动
-        proxy,
-    }
-    ...
-})
-```
-
-```typescript
-// proxy.ts
-import {
-  API_BASE_URL,
-  API_TARGET_URL,
-  MOCK_API_BASE_URL,
-  MOCK_API_TARGET_URL,
-} from '@config/constant'
-import { ProxyOptions } from 'vite'
-type ProxyTargetList = Record<string, ProxyOptions>
-
-const init: ProxyTargetList = {
-  // test
-  [API_BASE_URL]: {
-    target: API_TARGET_URL,
-    changeOrigin: true,
-    rewrite: (path) => path.replace(new RegExp(`^${API_BASE_URL}`), ''),
-  },
-  // mock
-  [MOCK_API_BASE_URL]: {
-    target: MOCK_API_TARGET_URL,
-    changeOrigin: true,
-    rewrite: (path) => path.replace(new RegExp(`^${MOCK_API_BASE_URL}`), '/api'),
-  },
-}
-
-export default init
-```
-
-## 🎉 其他
-
-- 🏗 支持`vw/vh`移动端布局兼容，也可以使用`plop`自己配置生成文件
-- 还有更多新功能增在`commiting`,如果你有更好的方案欢迎`PR`
-
-
-# 工具库
-
-学会使用适当的工具库，让`coding`事半功倍。尤其是开源的工具库，值得每个人学习，因为这本身就是你应该达到的层次。这里推荐一些大厂常用的类库，因为我喜新...，以下工具均可直接引入。
-
-## JS 库
-
-- [pnpm](https://pnpm.io/)，一个依赖包全局管理的工具，老板再也不用担心我的 C 盘不够用。Vite 官方推荐，字节官方前端团队大规模项目考验
-
-![image-20220110125758056](https://cdn.jsdelivr.net/gh/MaleWeb/picture/images/techblog/image-20220110125758056.png)
-
-- [mitt 全局事件监听库](https://github.com/developit/mitt)，Vue3 官方推荐
-- [Hammer](http://hammerjs.github.io/)，可以识别由触摸、鼠标和指针事件做出的手势,只有 7.34kb
-- [outils](https://github.com/proYang/outils)，开发中常用的函数集，也可以使用`lodash`
-
-- [tailwindcss](https://tailwindcss.com/)，艾玛香的一塌糊涂，一行 css 不写，3 分钟出一个页面。不适合初中级前端，建议还是先踏实学基础再用框架。
-
-  ![tailwindcss-1](https://cdn.jsdelivr.net/gh/MaleWeb/picture/images/techblog/tailwindcss-1.gif)
-
-  ![tailwindcss-2](https://cdn.jsdelivr.net/gh/MaleWeb/picture/images/techblog/tailwindcss-2.gif)
-
-- [Vue I18n](https://vue-i18n.intlify.dev/) 是 Vue.js 的国际化插件，如果你想做开源框架，国际化首选插件。
-
-- [ViteSSG](https://github.com/antfu/vite-ssg)，SEO 优化，这个项目有点意思，大家可以玩玩这个方案，之前我都是通过服务端渲染搞 SEO，后来了解到这个可以直接在 Vue3 的服务器上生成。
-
-- [Vitest](https://github.com/vitest-dev/vitest),基于 Vite 的单元测试工具，目前迭代比较快，尤大金牌赞助。可以持续关注，不建议使用在小项目中。
-
-  ![image-20220110125605172](https://cdn.jsdelivr.net/gh/MaleWeb/picture/images/techblog/image-20220110125605172.png)
-
-# UI 库
-
-- [arco-design](https://github.com/arco-design/arco-design)，字节团队新出的 UI 框架,配置层面更为灵活,`fast-vue3`使用的就是这个,不喜欢的小伙伴可以移除
-- [semi-design](https://github.com/DouyinFE/semi-design)，抖音前端出的框架，面向经常撕逼 UI 和 FE，可以尝鲜玩玩
-- [nutui](https://github.com/jdf2e/nutui)，京东前端团队出的 UI 框架，已升级到 3.X，个人认为颜值最高并接受反驳
-- [naive-ui](https://github.com/TuSimple/naive-ui)，尤大推荐，TypeScript 语法，主题可调，这家公司挺厉害
+如需继续扩展图层控制、绘制工具或行政区加载能力，可以在当前 `OpenLayers` 基础组件上继续补充。

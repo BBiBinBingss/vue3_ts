@@ -8,41 +8,36 @@
  */
 
 import TileLayer from 'ol/layer/Tile'
+import OSM from 'ol/source/OSM'
 import WMTS from 'ol/source/WMTS'
 import WMTSTileGrid from 'ol/tilegrid/WMTS'
-import { get as getProjection, ProjectionLike } from 'ol/proj'
+import { get as getProjection } from 'ol/proj'
 import { getTopLeft, getWidth } from 'ol/extent'
 
-// 获取指定的投影
-const projection: ProjectionLike | any = getProjection('EPSG:4326')
-const projectionExtent = projection?.getExtent()
-const size = getWidth(projectionExtent) / 256
-const resolutions: any = []
-const matrixIds: any = []
+const normalizeEnvValue = (value: string | undefined) => value?.replace(/^['"]|['"]$/g, '') ?? ''
 
-// 计算分辨率和矩阵ID
+const tdtBaseUrl = normalizeEnvValue(import.meta.env.VITE_APP_TDT_URL)
+const tdtToken = normalizeEnvValue(import.meta.env.VITE_APP_TOKEN)
+const hasTdtConfig = Boolean(tdtBaseUrl && tdtToken)
+
+const projection = getProjection('EPSG:4326')
+const projectionExtent = projection?.getExtent()
+const size = projectionExtent ? getWidth(projectionExtent) / 256 : 0
+const resolutions: number[] = []
+const matrixIds: number[] = []
+
 for (let z = 0; z < 19; ++z) {
-  resolutions[z] = size / Math.pow(2, z)
+  resolutions[z] = size / 2 ** z
   matrixIds[z] = z
 }
 
-/**
- * 创建瓦片图层
- * @param {string} className - 图层类名
- * @param {boolean} visible - 图层是否可见
- * @param {number} zIndex - 图层的z-index
- * @param {string} url - WMTS服务的URL
- * @param {string} layerName - WMTS图层名称
- * @param {boolean} wrapX - 是否在X轴上重复
- * @returns {TileLayer} 返回配置好的瓦片图层对象
- */
 function createLayer(
   className: string,
   visible: boolean,
   zIndex: number,
   url: string,
   layerName: string,
-  wrapX: boolean
+  wrapX: boolean,
 ) {
   return new TileLayer({
     className,
@@ -55,7 +50,7 @@ function createLayer(
       projection,
       matrixSet: 'c',
       tileGrid: new WMTSTileGrid({
-        origin: getTopLeft(projectionExtent),
+        origin: getTopLeft(projectionExtent!),
         resolutions,
         matrixIds,
       }),
@@ -66,54 +61,68 @@ function createLayer(
   })
 }
 
-// 配置各个瓦片图层
-export const layer = {
-  矢量图: createLayer(
-    '矢量图',
-    false,
-    -1,
-    `${import.meta.env.VITE_APP_TDT_URL}/vec_c/wmts?tk=${import.meta.env.VITE_APP_TOKEN}`,
-    'vec',
-    true
-  ),
-  矢量图标注: createLayer(
-    '矢量图标注',
-    false,
-    1,
-    `${import.meta.env.VITE_APP_TDT_URL}/cva_c/wmts?tk=${import.meta.env.VITE_APP_TOKEN}`,
-    'cva',
-    true
-  ),
-  影像图: createLayer(
-    '影像图',
-    false,
-    -1,
-    `${import.meta.env.VITE_APP_TDT_URL}/img_c/wmts?tk=${import.meta.env.VITE_APP_TOKEN}`,
-    'img',
-    true
-  ),
-  影像图标注: createLayer(
-    '影像图标注',
-    false,
-    1,
-    `${import.meta.env.VITE_APP_TDT_URL}/cia_c/wmts?tk=${import.meta.env.VITE_APP_TOKEN}`,
-    'cia',
-    true
-  ),
-  地形图: createLayer(
-    '地形图',
-    false,
-    -1,
-    `${import.meta.env.VITE_APP_TDT_URL}/ter_c/wmts?tk=${import.meta.env.VITE_APP_TOKEN}`,
-    'ter',
-    true
-  ),
-  地形图标注: createLayer(
-    '地形图标注',
-    false,
-    1,
-    `${import.meta.env.VITE_APP_TDT_URL}/cta_c/wmts?tk=${import.meta.env.VITE_APP_TOKEN}`,
-    'cta',
-    true
-  ),
+function createOsmLayer() {
+  return new TileLayer({
+    className: '开放街图',
+    visible: true,
+    zIndex: 0,
+    source: new OSM(),
+  })
 }
+
+export const defaultVisibleLayerNames = hasTdtConfig ? ['矢量图', '矢量图标注'] : ['开放街图']
+
+export const layer = hasTdtConfig
+  ? {
+      矢量图: createLayer(
+        '矢量图',
+        false,
+        -1,
+        `${tdtBaseUrl}/vec_c/wmts?tk=${tdtToken}`,
+        'vec',
+        true,
+      ),
+      矢量图标注: createLayer(
+        '矢量图标注',
+        false,
+        1,
+        `${tdtBaseUrl}/cva_c/wmts?tk=${tdtToken}`,
+        'cva',
+        true,
+      ),
+      影像图: createLayer(
+        '影像图',
+        false,
+        -1,
+        `${tdtBaseUrl}/img_c/wmts?tk=${tdtToken}`,
+        'img',
+        true,
+      ),
+      影像图标注: createLayer(
+        '影像图标注',
+        false,
+        1,
+        `${tdtBaseUrl}/cia_c/wmts?tk=${tdtToken}`,
+        'cia',
+        true,
+      ),
+      地形图: createLayer(
+        '地形图',
+        false,
+        -1,
+        `${tdtBaseUrl}/ter_c/wmts?tk=${tdtToken}`,
+        'ter',
+        true,
+      ),
+      地形图标注: createLayer(
+        '地形图标注',
+        false,
+        1,
+        `${tdtBaseUrl}/cta_c/wmts?tk=${tdtToken}`,
+        'cta',
+        true,
+      ),
+    }
+  : {
+      开放街图: createOsmLayer(),
+    }
