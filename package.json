@@ -2,14 +2,15 @@
   "name": "BBiBinBings",
   "private": true,
   "version": "0.2.3",
+  "type": "module",
   "author": "混世魔王",
   "packageManager": "pnpm@10.6.5",
   "engines": {
     "node": ">=20.18.0"
   },
   "scripts": {
-    "cleanAndPrune": "node ./scripts/package-manager.cjs clean-and-prune",
-    "bootstrap": "node ./scripts/package-manager.cjs install",
+    "cleanAndPrune": "node ./scripts/package-manager.js clean-and-prune",
+    "bootstrap": "node ./scripts/package-manager.js install",
     "plop": "plop",
     "dev": "vite --mode development",
     "dev:host": "vite --mode development --host",

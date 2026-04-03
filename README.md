@@ -112,7 +112,7 @@ pnpm build:analyze
 ├── types/                  # 自动生成和项目类型声明
 ├── postcss.config.js
 ├── tsconfig.json
-├── vite.config.mts
+├── vite.config.ts
 └── package.json
 ```
 

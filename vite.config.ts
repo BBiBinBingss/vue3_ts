@@ -3,7 +3,7 @@
  * @Date         : 2023-02-18 00:27:22
  * @LastEditors  : tangbo 852425209@qq.com
  * @LastEditTime : 2023-07-11 14:50:58
- * @FilePath     : \vue3_ts\vite.config.mts
+ * @FilePath     : \vue3_ts\vite.config.ts
  * @Description  :
  */
 import type { UserConfig, ConfigEnv } from 'vite'

@@ -1,7 +1,9 @@
-const fs = require('node:fs')
-const path = require('node:path')
-const { spawnSync } = require('node:child_process')
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { spawnSync } from 'node:child_process'
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const rootDir = path.resolve(__dirname, '..')
 
 function parseArgs(argv) {

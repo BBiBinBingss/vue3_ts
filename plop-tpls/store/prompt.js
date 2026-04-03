@@ -1,5 +1,5 @@
-const fs = require('node:fs')
-const path = require('node:path')
+import fs from 'node:fs'
+import path from 'node:path'
 
 function getFolders(currentPath) {
   const folders = [currentPath]
@@ -16,7 +16,7 @@ function getFolders(currentPath) {
   return folders
 }
 
-module.exports = {
+export default {
   description: '创建全局模块化状态',
   prompts: [
     {

@@ -8,7 +8,7 @@
  */
 const enableViewport = process.env.VITE_ENABLE_VIEWPORT === 'true'
 
-module.exports = {
+export default {
   plugins: {
     autoprefixer: {},
     ...(enableViewport

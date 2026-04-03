@@ -1,13 +1,17 @@
-const js = require('@eslint/js')
-const { FlatCompat } = require('@eslint/eslintrc')
-const globals = require('globals')
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import js from '@eslint/js'
+import { FlatCompat } from '@eslint/eslintrc'
+import globals from 'globals'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
   recommendedConfig: js.configs.recommended,
 })
 
-module.exports = [
+export default [
   {
     ignores: [
       '*.sh',
