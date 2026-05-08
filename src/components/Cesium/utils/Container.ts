@@ -75,7 +75,7 @@ export default class Container {
       destination,
       orientation,
       duration: 3.0,
-      easingFunction: EasingFunction?.LINEAR,
+      easingFunction: EasingFunction?.LINEAR_NONE,
     }
 
     // 使用 flyTo 进行平滑过渡

@@ -14,7 +14,6 @@ import type { Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import windiCSS from 'vite-plugin-windicss'
-import VitePluginCertificate from 'vite-plugin-mkcert'
 import vueSetupExtend from 'vite-plugin-vue-setup-extend'
 import { ConfigSvgIconsPlugin } from './svgIcons'
 import { AutoRegistryComponents } from './component'
@@ -28,7 +27,6 @@ import { ConfigProgressPlugin } from './progress'
 import { createTitlePlugin } from './plugintitle'
 import { ConfigLayoutsPlugin } from './layouts'
 import cesium from 'vite-plugin-cesium'
-
 
 export function createVitePlugins(isBuild: boolean, mode: string) {
   const vitePlugins: (Plugin | Plugin[])[] = [
@@ -60,7 +58,7 @@ export function createVitePlugins(isBuild: boolean, mode: string) {
     ConfigProgressPlugin(),
     // 页面title
     createTitlePlugin(mode),
-     // cesium
+    // cesium
     cesium(),
   ]
 
@@ -73,7 +71,7 @@ export function createVitePlugins(isBuild: boolean, mode: string) {
   vitePlugins.push(ConfigMockPlugin(isBuild))
 
   // rollup-plugin-visualizer
-  vitePlugins.push(ConfigVisualizerConfig())
+  vitePlugins.push(ConfigVisualizerConfig() as unknown as Plugin | Plugin[])
 
   return vitePlugins
 }

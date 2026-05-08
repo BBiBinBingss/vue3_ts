@@ -1,7 +1,7 @@
 /*
  * @Author       : tangbo 852425209@qq.com
  * @Date         : 2023-02-18 00:27:22
- * @LastEditors: tangbo 
+ * @LastEditors: tangbo
  * @LastEditTime: 2024-08-23 17:02:38
  * @FilePath: \vue3_ts\vite.config.ts
  * @Description  :
@@ -75,7 +75,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       },
       watch: {},
       minify: 'terser',
-      brotliSize: false,
+      reportCompressedSize: false,
       chunkSizeWarningLimit: 2000,
     },
   }

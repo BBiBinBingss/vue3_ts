@@ -16,16 +16,25 @@
     "lint:prettier": "prettier --write  \"src/**/*.{js,json,tsx,css,less,scss,vue,html,md}\"",
     "lint:stylelint": "stylelint --cache --fix \"**/*.{vue,less,postcss,css,scss}\" --cache --cache-location node_modules/.cache/stylelint/",
     "lint:lint-staged": "lint-staged",
+    "test:gis": "tsx src/utils/gis/__tests__/selfTest.ts",
     "prepare": "husky install",
     "deps": "yarn upgrade-interactive --latest"
   },
   "dependencies": {
     "@antv/l7": "^2.17.10",
     "@antv/l7-maps": "^2.17.10",
+    "@turf/along": "^7.3.5",
+    "@turf/area": "^7.3.5",
+    "@turf/bbox-polygon": "^7.3.5",
+    "@turf/bezier-spline": "^7.3.5",
+    "@turf/boolean-valid": "^7.3.5",
+    "@turf/helpers": "^7.3.5",
+    "@turf/length": "^7.3.5",
+    "@turf/random": "^7.3.5",
     "@vueuse/components": "^8.6.0",
     "@vueuse/core": "^8.6.0",
     "axios": "^0.27.2",
-    "cesium": "^1.108.0",
+    "cesium": "1.108.0",
     "jss": "^10.10.0",
     "jss-preset-default": "^10.10.0",
     "mockjs": "^1.1.0",
@@ -38,6 +47,7 @@
     "vue-router": "^4.0.15"
   },
   "devDependencies": {
+    "@types/geojson": "^7946.0.16",
     "@types/node": "^17.0.41",
     "@types/nprogress": "^0.2.0",
     "@types/qs": "^6.9.7",
@@ -69,6 +79,7 @@
     "stylelint-config-recommended-vue": "^1.4.0",
     "stylelint-config-standard": "^26.0.0",
     "stylelint-order": "^5.0.0",
+    "tsx": "^4.20.3",
     "typescript": "^4.7.3",
     "unplugin-auto-import": "^0.16.6",
     "unplugin-icons": "^0.14.3",
@@ -118,8 +129,8 @@
     ]
   },
   "engines": {
-    "node": "18.0.0",
-    "npm": "8.6.0",
-    "pnpm": "8.6.2"
+    "node": ">=18 <21",
+    "npm": ">=8",
+    "pnpm": ">=8.6.2"
   }
 }
