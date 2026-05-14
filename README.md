@@ -1,10 +1,12 @@
+# Vue3 TS 框架
+
 ## 基础框架
 
 ## 目录结构
 
 以下是系统的目录结构
 
-```
+```text
 ├── config
 │   ├── vite             // vite配置
 │   ├── constant         // 系统常量
@@ -402,7 +404,7 @@ export default init
 - 🏗 支持`vw/vh`移动端布局兼容，也可以使用`plop`自己配置生成文件
 - 还有更多新功能增在`commiting`,如果你有更好的方案欢迎`PR`
 
-# 工具库
+## 工具库
 
 学会使用适当的工具库，让`coding`事半功倍。尤其是开源的工具库，值得每个人学习，因为这本身就是你应该达到的层次。这里推荐一些大厂常用的类库，因为我喜新...，以下工具均可直接引入。
 
@@ -430,7 +432,7 @@ export default init
 
   ![image-20220110125605172](https://cdn.jsdelivr.net/gh/MaleWeb/picture/images/techblog/image-20220110125605172.png)
 
-# UI 库
+## UI 库
 
 - [arco-design](https://github.com/arco-design/arco-design)，字节团队新出的 UI 框架,配置层面更为灵活,`fast-vue3`使用的就是这个,不喜欢的小伙伴可以移除
 - [semi-design](https://github.com/DouyinFE/semi-design)，抖音前端出的框架，面向经常撕逼 UI 和 FE，可以尝鲜玩玩
@@ -439,118 +441,17 @@ export default init
 
 ---
 
-# GIS 模块说明（Turf + Cesium）
+## GIS 模块说明（Turf + Cesium）
 
-> 本项目已完成基于 Turf 的 GIS 数据模拟封装，业务层无需直接调用 Turf API。
+为保证“全局唯一文档”，GIS 详细说明统一维护在：
 
-## 模块目标
+- `GIS_RANDOM_MODULE.md`
 
-- 统一封装随机点、随机线、随机面
-- 统一封装 GeoJSON 工厂
-- 提供 Cesium 图层适配层（source/layer 去重、更新、销毁）
-- 提供 Mock GIS 数据与动态轨迹回放能力
+包含内容：
 
-## 目录
-
-```text
-src/
-  utils/
-    gis/
-      index.ts
-      types.ts
-      geojsonFactory.ts
-      random.ts
-      movingTrack.ts
-      mock.ts
-      adapters/
-        cesiumLayerAdapter.ts
-        layerRegistry.ts
-      __tests__/
-        selfTest.ts
-```
-
-## 快速使用
-
-```typescript
-import {
-  createRandomPoints,
-  createRandomLines,
-  createRandomPolygons,
-  addPointLayer,
-  addLineLayer,
-  addPolygonLayer,
-} from '/@/utils/gis'
-
-const points = createRandomPoints({ count: 100, randomColor: true })
-const lines = createRandomLines({ count: 20, curve: true })
-const polygons = createRandomPolygons({ count: 8, areaTest: true })
-
-await addPointLayer({ sourceId: 'demo-points', data: points })
-await addLineLayer({ sourceId: 'demo-lines', data: lines })
-await addPolygonLayer({ sourceId: 'demo-polygons', data: polygons })
-```
-
-## 业务规范
-
-- 业务层只通过 `'/@/utils/gis'` 导入能力
-- 禁止在业务页面直接调用：`turf.randomPoint/randomLineString/randomPolygon`
-- GeoJSON 通过 `createFeature/createFeatureCollection` 统一生成
-
-## 核心 API
-
-### 随机数据
-
-- `createRandomPoints(options)`：随机点（支持 `count/bbox/properties/randomColor/id/offset/clusterTest/debug`）
-- `createRandomLines(options)`：随机线（支持 `count/bbox/maxVertices/maxLength/curve/style/mockTrack/debug`）
-- `createRandomPolygons(options)`：随机面（支持 `count/bbox/numVertices/maxRadialLength/randomColor/areaTest/validateGeometry/debug`）
-
-### 工厂
-
-- `createFeature(geometry, options)`
-- `createFeatureCollection(features, options)`
-
-统一处理：`id/properties/metadata/style/timestamp/sourceType`
-
-### Cesium 图层适配
-
-- `addPointLayer(options)`
-- `addLineLayer(options)`
-- `addPolygonLayer(options)`
-- `hasLayer(sourceId)`
-- `removeLayer(sourceId)`
-
-### Mock 能力
-
-- `mockDevicePoints()`
-- `mockCarTracks()`
-- `mockWarningPolygons()`
-
-### 动态轨迹
-
-- `createMovingTrack(options)`：支持时间轴帧、循环回放与点位导出
-
-## 页面接入示例
-
-可参考：`src/pages/index/index.vue`
-
-页面通过 `onCesiumViewerReady` 在地图初始化后挂载图层，避免地图未就绪导致异常。
-
-## 自测与校验
-
-```bash
-pnpm run test:gis
-pnpm exec vue-tsc --noEmit
-```
-
-## 常见问题
-
-### 编辑器仍出现“找不到 vue/cesium/vite 类型”红线
-
-若命令行 `vue-tsc` 已通过，通常是 VS Code TypeScript 服务缓存问题：
-
-1. 执行 `TypeScript: Restart TS Server`
-2. 执行 `Developer: Reload Window`
-
-### 端口 8080 返回 nginx 403
-
-说明 8080 被本机 nginx 占用，请调整 `config/constant.ts` 中 `VITE_PORT` 或停用占用进程。
+- 模块结构与职责
+- 统一 API 与业务规范
+- 基于当前定位随机生成策略
+- Cesium 交互能力（click/hover/highlight/flyTo/fitBounds）
+- 分批加载节流与队列化渲染策略
+- 容错、性能建议与扩展方案

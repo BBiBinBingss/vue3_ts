@@ -7,7 +7,9 @@ export {
   addPointLayer,
   addLineLayer,
   addPolygonLayer,
+  getLayerEntityCount,
   hasLayer,
   removeLayer,
+  setLayerVisible,
 } from './adapters/cesiumLayerAdapter'
 export { onViewerReady as onCesiumViewerReady } from '/@/components/Cesium/utils/viewerRegistry'

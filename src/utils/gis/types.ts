@@ -7,6 +7,7 @@ import type {
   Point,
   Position,
 } from 'geojson'
+import type { Cartesian2, Entity, Viewer } from 'cesium'
 
 /**
  * 数据来源类型。
@@ -181,6 +182,37 @@ export interface CesiumLayerOptions<G extends Geometry, P extends GeoFeatureProp
   data: FeatureCollection<G, P>
   style?: MapFeatureStyle
   flyTo?: boolean
+  events?: LayerEventHandlers<P>
+}
+
+/**
+ * 图层交互事件上下文。
+ */
+export interface LayerInteractionEvent<P extends GeoFeatureProperties> {
+  sourceId: string
+  layerId: string
+  viewer: Viewer
+  entity: Entity
+  position?: Cartesian2
+  properties?: P
+  flyTo: () => Promise<void>
+  fitBounds: () => Promise<void>
+  highlight: () => void
+}
+
+/**
+ * 图层交互配置。
+ */
+export interface LayerEventHandlers<P extends GeoFeatureProperties> {
+  enable?: boolean
+  highlightOnClick?: boolean
+  highlightOnHover?: boolean
+  flyToOnClick?: boolean
+  fitBoundsOnClick?: boolean
+  clickStyle?: MapFeatureStyle
+  hoverStyle?: MapFeatureStyle
+  onClick?: (event: LayerInteractionEvent<P>) => void | Promise<void>
+  onHover?: (event: LayerInteractionEvent<P>) => void | Promise<void>
 }
 
 /**

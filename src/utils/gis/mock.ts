@@ -2,13 +2,20 @@ import type { FeatureCollection, LineString, Point, Polygon } from 'geojson'
 import { createRandomLines, createRandomPoints, createRandomPolygons } from './random'
 import type { GeoFeatureProperties } from './types'
 
+type BBox = [number, number, number, number]
+
 /**
  * 模拟设备点位。
  * @param count 点数量
+ * @param bbox 生成范围
  */
-export function mockDevicePoints(count = 200): FeatureCollection<Point, GeoFeatureProperties> {
+export function mockDevicePoints(
+  count = 200,
+  bbox?: BBox
+): FeatureCollection<Point, GeoFeatureProperties> {
   return createRandomPoints({
     count,
+    bbox,
     id: 'device',
     randomColor: true,
     clusterTest: true,
@@ -24,10 +31,15 @@ export function mockDevicePoints(count = 200): FeatureCollection<Point, GeoFeatu
 /**
  * 模拟车辆轨迹线。
  * @param count 轨迹数量
+ * @param bbox 生成范围
  */
-export function mockCarTracks(count = 40): FeatureCollection<LineString, GeoFeatureProperties> {
+export function mockCarTracks(
+  count = 40,
+  bbox?: BBox
+): FeatureCollection<LineString, GeoFeatureProperties> {
   return createRandomLines({
     count,
+    bbox,
     id: 'car-track',
     curve: true,
     mockTrack: true,
@@ -49,10 +61,15 @@ export function mockCarTracks(count = 40): FeatureCollection<LineString, GeoFeat
 /**
  * 模拟预警面。
  * @param count 面数量
+ * @param bbox 生成范围
  */
-export function mockWarningPolygons(count = 12): FeatureCollection<Polygon, GeoFeatureProperties> {
+export function mockWarningPolygons(
+  count = 12,
+  bbox?: BBox
+): FeatureCollection<Polygon, GeoFeatureProperties> {
   return createRandomPolygons({
     count,
+    bbox,
     id: 'warning-area',
     areaTest: true,
     randomColor: true,

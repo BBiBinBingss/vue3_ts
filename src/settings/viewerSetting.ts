@@ -15,4 +15,7 @@ export const ViewerSettingStore: any = {
   navigationInstructionsInitiallyVisible: false,
   scene3DOnly: false,
   baseLayer: false,
+  requestRenderMode: true, // 按需渲染模式，避免 Worker 连续通信
+  maximumRenderTimeChange: Infinity, // 禁用自动性能优化
 }
+

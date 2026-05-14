@@ -7,7 +7,7 @@
  * @Description  : 初始化地图
  */
 
-import { Viewer, Cartesian3, Math as CesiumMath, EasingFunction } from 'cesium'
+import { Viewer, Cartesian3, Math as CesiumMath } from 'cesium'
 import { nextTick } from 'vue'
 import { layers } from './useLayer'
 import { viewerSettingStore } from '/@/store/modules/viewerSetting'
@@ -75,7 +75,6 @@ export default class Container {
       destination,
       orientation,
       duration: 3.0,
-      easingFunction: EasingFunction?.LINEAR_NONE,
     }
 
     // 使用 flyTo 进行平滑过渡

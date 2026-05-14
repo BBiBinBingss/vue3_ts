@@ -91,6 +91,37 @@ const normalizeCount = (count: number | undefined, fallback: number): number => 
 }
 
 /**
+ * 粗略计算线长度（单位：公里）。
+ */
+const calcLineLengthKm = (coordinates: number[][]): number => {
+  if (!Array.isArray(coordinates) || coordinates.length < 2) {
+    return 0
+  }
+
+  const toRad = (value: number) => (value * Math.PI) / 180
+  const earthRadiusKm = 6371
+
+  let total = 0
+  for (let index = 1; index < coordinates.length; index += 1) {
+    const prev = coordinates[index - 1]
+    const current = coordinates[index]
+    const lat1 = toRad(prev[1])
+    const lat2 = toRad(current[1])
+    const deltaLat = lat2 - lat1
+    const deltaLng = toRad(current[0] - prev[0])
+
+    const haversine =
+      Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+      Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2)
+
+    const central = 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine))
+    total += earthRadiusKm * central
+  }
+
+  return Number(total.toFixed(3))
+}
+
+/**
  * 随机点工厂。
  * @param options 配置项
  * @returns FeatureCollection<Point>
@@ -195,6 +226,7 @@ export function createRandomLines<P extends GeoFeatureProperties = GeoFeaturePro
     const properties = resolveProperties(index, options.properties)
     const id = `${options.id ?? 'line'}-${index + 1}`
     const curved = options.curve ? (bezierSpline(item) as Feature<LineString, P>) : item
+    const lineLengthKm = calcLineLengthKm(curved.geometry.coordinates as number[][])
 
     return {
       ...curved,
@@ -203,6 +235,7 @@ export function createRandomLines<P extends GeoFeatureProperties = GeoFeaturePro
         ...(curved.properties ?? {}),
         ...properties,
         id,
+        lineLengthKm,
         ...(options.mockTrack ? { trackId: id, speed: 30 + index } : {}),
       } as P,
     }
@@ -239,8 +272,28 @@ export function createRandomPolygons<P extends GeoFeatureProperties = GeoFeature
 ): FeatureCollection<Polygon, P> {
   const count = normalizeCount(options.count, 10)
   const bbox = normalizeBbox(options.bbox)
+  // 减小 bbox 边界以避免多边形生成超出范围
+  const [minX, minY, maxX, maxY] = bbox
+  const margin = Math.min((maxX - minX) * 0.2, (maxY - minY) * 0.2)
+  let safeBbox: BBox = [minX + margin, minY + margin, maxX - margin, maxY - margin]
+
+  const safeWidth = safeBbox[2] - safeBbox[0]
+  const safeHeight = safeBbox[3] - safeBbox[1]
+
+  // 当处于高纬度边界或相机视角导致 bbox 过窄时，回退到原始 bbox，避免无效范围。
+  if (safeWidth <= 0 || safeHeight <= 0) {
+    safeBbox = bbox
+  }
+
+  const effectiveWidth = safeBbox[2] - safeBbox[0]
+  const effectiveHeight = safeBbox[3] - safeBbox[1]
+  const minSide = Math.min(effectiveWidth, effectiveHeight)
+
+  // turf 约束：max_radial_length 不得大于 bbox 半径，按短边动态约束并留安全余量。
+  const maxAllowedRadialLength = Math.max(0.001, minSide * 0.45)
   const numVertices = options.numVertices ?? 6
-  const maxRadialLength = options.maxRadialLength ?? 0.18
+  const requestedMaxRadialLength = options.maxRadialLength ?? 0.12
+  const maxRadialLength = Math.min(requestedMaxRadialLength, maxAllowedRadialLength)
 
   if (count === 0) {
     return createFeatureCollection([], {
@@ -254,7 +307,7 @@ export function createRandomPolygons<P extends GeoFeatureProperties = GeoFeature
   }
 
   const raw = randomPolygon(count, {
-    bbox,
+    bbox: safeBbox,
     num_vertices: numVertices,
     max_radial_length: maxRadialLength,
   }) as FeatureCollection<Polygon, P>
@@ -297,7 +350,9 @@ export function createRandomPolygons<P extends GeoFeatureProperties = GeoFeature
   withDebugLog(options.debug, 'createRandomPolygons', {
     count,
     bbox,
+    safeBbox,
     numVertices,
+    requestedMaxRadialLength,
     maxRadialLength,
     features: result.features.length,
   })
