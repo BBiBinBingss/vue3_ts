@@ -15,7 +15,7 @@
 export const APP_TITLE = '官方'
 
 // 本地服务端口
-export const VITE_PORT = 5173
+export const VITE_PORT = 8080
 
 // prefix
 export const API_PREFIX = '/api'

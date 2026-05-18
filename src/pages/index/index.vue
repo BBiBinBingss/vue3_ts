@@ -18,6 +18,7 @@
         </div>
         <button
           class="gis-toolbar__health"
+          type="button"
           :disabled="!viewerReady || loading"
           @click="handleHealthCheck"
         >
@@ -32,6 +33,7 @@
             v-for="action in demoActions"
             :key="action.key"
             class="gis-demo-button"
+            type="button"
             :class="`gis-demo-button--${action.tone}`"
             :disabled="isActionDisabled(action)"
             @click="action.handler"
@@ -48,6 +50,7 @@
           <button
             v-for="option in baseLayerOptions"
             :key="option.key"
+            type="button"
             :class="{ 'is-active': activeBaseLayer === option.key }"
             :disabled="!viewerReady || loading"
             @click="handleSwitchBaseLayer(option.key)"
@@ -63,6 +66,7 @@
           <button
             v-for="layer in demoLayerOptions"
             :key="layer.key"
+            type="button"
             :class="{
               'is-active': layerVisibility[layer.key],
               'is-empty': getDemoLayerCount(layer.key) === 0,
@@ -77,19 +81,64 @@
       </div>
     </div>
 
-    <div class="gis-info-panel">
-      <p><strong>地图状态：</strong>{{ viewerReady ? '已就绪' : '初始化中' }}</p>
-      <p><strong>最近动作：</strong>{{ status.lastAction || '暂无' }}</p>
-      <p><strong>运行体检：</strong>{{ status.healthSummary || '未检测' }}</p>
-      <p><strong>体检详情：</strong>{{ status.healthDetails || '点击健康检查获取诊断信息' }}</p>
-      <p><strong>底图模式：</strong>{{ activeBaseLayerLabel }}</p>
-      <p><strong>业务图层：</strong>{{ layerVisibleSummary }}</p>
-      <p><strong>随机范围：</strong>{{ status.activeBbox }}</p>
-      <p><strong>点数量：</strong>{{ status.pointCount }}</p>
-      <p><strong>线数量：</strong>{{ status.lineCount }}</p>
-      <p><strong>面数量：</strong>{{ status.polygonCount }}</p>
-      <p><strong>轨迹帧数：</strong>{{ status.trackPointCount }}</p>
-      <p><strong>交互信息：</strong>{{ status.interactionMessage || '点击地图要素查看详情' }}</p>
+    <div class="gis-info-panel" aria-label="GIS 状态评估面板">
+      <div class="gis-info-panel__header">
+        <div>
+          <strong>评估摘要</strong>
+          <span>当前底图：{{ activeBaseLayerLabel }}</span>
+        </div>
+        <em :class="{ 'is-ready': viewerReady }">{{ viewerReady ? 'Ready' : 'Loading' }}</em>
+      </div>
+
+      <div class="gis-metric-grid" aria-label="数据规模">
+        <div>
+          <span>点</span>
+          <strong>{{ status.pointCount }}</strong>
+        </div>
+        <div>
+          <span>线</span>
+          <strong>{{ status.lineCount }}</strong>
+        </div>
+        <div>
+          <span>面</span>
+          <strong>{{ status.polygonCount }}</strong>
+        </div>
+        <div>
+          <span>轨迹</span>
+          <strong>{{ status.trackPointCount }}</strong>
+        </div>
+      </div>
+
+      <div class="gis-info-list">
+        <p>
+          <strong>地图状态</strong>
+          <span>{{ viewerReady ? '已就绪' : '初始化中' }}</span>
+        </p>
+        <p>
+          <strong>最近动作</strong>
+          <span>{{ status.lastAction || '暂无' }}</span>
+        </p>
+        <p>
+          <strong>运行体检</strong>
+          <span>{{ status.healthSummary || '未检测' }}</span>
+        </p>
+        <p>
+          <strong>体检详情</strong>
+          <span>{{ status.healthDetails || '点击健康检查获取诊断信息' }}</span>
+        </p>
+        <p>
+          <strong>业务图层</strong>
+          <span>{{ layerVisibleSummary }}</span>
+        </p>
+        <p>
+          <strong>随机范围</strong>
+          <span>{{ status.activeBbox }}</span>
+        </p>
+        <p>
+          <strong>交互信息</strong>
+          <span>{{ status.interactionMessage || '点击地图要素查看详情' }}</span>
+        </p>
+      </div>
     </div>
   </div>
 </template>
