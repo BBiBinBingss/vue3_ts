@@ -12,6 +12,7 @@ import { nextTick } from 'vue'
 import { layers } from './useLayer'
 import { viewerSettingStore } from '/@/store/modules/viewerSetting'
 import { coordinatesSettingStore } from '/@/store/modules/coordinatesSetting'
+import { setViewerInstance } from './viewerRegistry'
 
 export default class Container {
   private viewer: Viewer
@@ -42,6 +43,9 @@ export default class Container {
   private async postInitialize(): Promise<void> {
     this.initializeLayers()
     await this.initializePosition()
+    // 中文备注：必须等默认视角飞行完成后再通知业务页面生成默认点线面。
+    // 否则页面会按 Cesium 初始相机位置取 bbox，出现“计数有数据但屏幕看不到图层”的情况。
+    setViewerInstance(this.viewer)
   }
 
   /**
@@ -70,14 +74,14 @@ export default class Container {
       roll: CesiumMath.toRadians(roll),
     }
 
-    // 设置动画效果的相机过渡参数
-    const flyToOptions = {
-      destination,
-      orientation,
-      duration: 3.0,
-    }
-
-    // 使用 flyTo 进行平滑过渡
-    await this.viewer.scene.camera.flyTo(flyToOptions)
+    await new Promise<void>((resolve) => {
+      this.viewer.scene.camera.flyTo({
+        destination,
+        orientation,
+        duration: 3.0,
+        complete: resolve,
+        cancel: resolve,
+      })
+    })
   }
 }
