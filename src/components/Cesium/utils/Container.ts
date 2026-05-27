@@ -16,6 +16,7 @@ import { setViewerInstance } from './viewerRegistry'
 
 export default class Container {
   private viewer: Viewer
+  private destroyed = false
 
   // 公开的getter，以允许外部访问_viewer
   public get container(): Viewer {
@@ -43,6 +44,9 @@ export default class Container {
   private async postInitialize(): Promise<void> {
     this.initializeLayers()
     await this.initializePosition()
+    if (this.destroyed || this.viewer.isDestroyed()) {
+      return
+    }
     // 中文备注：必须等默认视角飞行完成后再通知业务页面生成默认点线面。
     // 否则页面会按 Cesium 初始相机位置取 bbox，出现“计数有数据但屏幕看不到图层”的情况。
     setViewerInstance(this.viewer)
@@ -66,6 +70,9 @@ export default class Container {
    * 初始化Viewer的位置
    */
   private async initializePosition(): Promise<void> {
+    if (this.destroyed || this.viewer.isDestroyed()) {
+      return
+    }
     const { lon, lat, height, heading, pitch, roll } = coordinatesSettingStore().LocationComponent
     const destination = Cartesian3.fromDegrees(lon, lat, height)
     const orientation = {
@@ -83,5 +90,16 @@ export default class Container {
         cancel: resolve,
       })
     })
+  }
+
+  public destroy(): void {
+    if (this.destroyed) {
+      return
+    }
+
+    this.destroyed = true
+    if (!this.viewer.isDestroyed()) {
+      this.viewer.destroy()
+    }
   }
 }

@@ -1,9 +1,11 @@
 import { defineStore } from 'pinia'
 import { nextTick } from 'vue'
 import { store } from '/@/store'
+import type { Viewer } from 'cesium'
+import { setVisibleBaseLayers } from '/@/components/Cesium/utils/useLayer'
 
 interface LayersSettingState {
-  layers: any[]
+  layers: string[]
 }
 
 export const layersSettingStore = defineStore({
@@ -14,15 +16,12 @@ export const layersSettingStore = defineStore({
   getters: {},
   actions: {
     setLayers(viewer: any, layers: any[]) {
-      this.layers = layers
+      this.layers = [...layers]
       nextTick(() => {
-        const imageryLayers = viewer.imageryLayers._layers
-        for (let i = 0; i < this.layers.length; i++) {
-          const layer = imageryLayers.find((imageryLayer: { imageryProvider: { _layer: any } }) => {
-            return imageryLayer.imageryProvider._layer === layers[i]
-          })
-          if (layer) layer.show = true
+        if (!viewer) {
+          return
         }
+        setVisibleBaseLayers(viewer as Viewer, this.layers)
       })
     },
   },

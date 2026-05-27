@@ -1,5 +1,30 @@
 # Vue3 TS 框架
 
+## Cesium 组件化（参考 vue-cesium）
+
+当前项目对 Cesium 采用“参考其架构、结合本项目实现”的方式，没有引入外部 `vue-cesium` 依赖。
+
+组件分层如下：
+
+- `src/components/Cesium/components/CesiumConfigProvider.ts`：统一下发地图配置（容器、默认底图、地形参数）。
+- `src/components/Cesium/components/CesiumViewer.ts`：仅负责 Viewer 生命周期（创建/销毁）。
+- `src/components/Cesium/components/CesiumBaseLayerProvider.ts`：负责底图显隐切换。
+- `src/components/Cesium/components/CesiumTerrainProvider.ts`：负责地形加载与卸载。
+
+页面调用保持简洁：
+
+```vue
+<Cesium :default-base-layer-ids="currentBaseLayerIds" :terrain-url="terrainUrl" />
+```
+
+这样做的目标是：
+
+- 保持现有项目目录和状态管理（Pinia、settings）不被破坏；
+- 降低 `index.vue` 对 Cesium 细节的直接耦合；
+- 让后续图层/地形能力可按组件继续扩展。
+
+
+
 ## 基础框架
 
 ## 目录结构

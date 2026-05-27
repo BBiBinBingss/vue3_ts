@@ -9,7 +9,7 @@
 
 <template>
   <div class="gis-demo-page">
-    <Cesium />
+    <Cesium :default-base-layer-ids="currentBaseLayerIds" :terrain-url="terrainUrl" />
     <div class="gis-toolbar" aria-label="GIS 演示操作面板">
       <div class="gis-toolbar__header">
         <div>
@@ -148,6 +148,7 @@ import { Cartesian2, Cartographic, Math as CesiumMath } from 'cesium'
 import { computed, nextTick, onBeforeUnmount, reactive, ref } from 'vue'
 import Cesium from '/@/components/Cesium'
 import { getViewerInstance } from '/@/components/Cesium/utils/viewerRegistry'
+import { layersSettingStore } from '/@/store/modules/layersSetting'
 import {
   addLineLayer,
   addPointLayer,
@@ -214,18 +215,11 @@ interface ToolbarAction {
   handler: () => void | Promise<void>
 }
 
-type ImageryLayerLike = {
-  show: boolean
-  imageryProvider?: {
-    _layer?: string
-    layer?: string
-  }
-}
-
 const FALLBACK_BBOX: BBox = [113.7, 22.3, 114.2, 22.8]
 const LOAD_THROTTLE_MS = 80
 const SECONDARY_INSPECT_DELAY_MS = 1200
 let secondaryInspectTimer: ReturnType<typeof setTimeout> | null = null
+const terrainUrl = import.meta.env.VITE_APP_MAP_URL ?? ''
 
 /**
  * 底图按钮配置。
@@ -280,6 +274,10 @@ const getDemoLayerLabel = (key: DemoLayerKey): string => {
 
 const activeBaseLayerLabel = computed(() => {
   return baseLayerOptions.find((item) => item.key === activeBaseLayer.value)?.label ?? '未知'
+})
+
+const currentBaseLayerIds = computed(() => {
+  return baseLayerOptions.find((item) => item.key === activeBaseLayer.value)?.layerIds ?? []
 })
 
 const layerVisibleSummary = computed(() => {
@@ -403,63 +401,26 @@ const formatBbox = (bbox: BBox): string => {
   return bbox.map((item) => item.toFixed(4)).join(', ')
 }
 
-/**
- * 从 Cesium ImageryLayer 里读取天地图 layer 标识。
- * 说明：Cesium WebMapTileServiceImageryProvider 没有把 layer 暴露成公开字段，
- * 项目现有 layersSettingStore 也依赖 _layer，这里集中封装，避免模板或业务函数散落私有字段读取。
- */
-const getImageryLayerId = (imageryLayer: ImageryLayerLike): string => {
-  return imageryLayer.imageryProvider?._layer ?? imageryLayer.imageryProvider?.layer ?? ''
-}
-
-/**
- * 应用底图显示状态。
- * @param layerIds 需要显示的天地图 layer id 列表
- * @returns 是否成功写入底图状态；隐藏底图时 layerIds 为空也视为成功。
- */
-const applyBaseLayerVisibility = (layerIds: string[]): boolean => {
-  const viewer = getViewerInstance()
-  if (!viewer) {
-    return false
-  }
-
-  const targetIds = new Set(layerIds)
-  let matchedCount = 0
-
-  for (let i = 0; i < viewer.imageryLayers.length; i++) {
-    const imageryLayer = viewer.imageryLayers.get(i) as unknown as ImageryLayerLike
-    const layerId = getImageryLayerId(imageryLayer)
-    if (!layerId) {
-      continue
-    }
-
-    const shouldShow = targetIds.has(layerId)
-    imageryLayer.show = shouldShow
-    if (shouldShow) {
-      matchedCount += 1
-    }
-  }
-
-  requestSceneRender()
-  return layerIds.length === 0 || matchedCount > 0
-}
-
 const handleSwitchBaseLayer = (key: BaseLayerKey, silent = false): void => {
   const option = baseLayerOptions.find((item) => item.key === key)
   if (!option) {
     return
   }
 
-  const applied = applyBaseLayerVisibility(option.layerIds)
+  const viewer = getViewerInstance()
+  if (viewer) {
+    layersSettingStore().setLayers(viewer, option.layerIds)
+  }
   activeBaseLayer.value = option.key
 
   if (silent) {
     return
   }
 
-  status.lastAction = applied ? `已切换底图：${option.label}` : `底图暂未加载完成：${option.label}`
+  const applied = Boolean(viewer)
+  status.lastAction = applied ? `已切换底图：${option.label}` : `底图将在地图初始化后生效：${option.label}`
   setInteractionMessage(
-    applied ? `当前底图为 ${option.label}` : '底图图层还未完成初始化，请稍后再切换'
+    applied ? `当前底图为 ${option.label}` : '底图配置已更新，等待地图初始化完成后应用'
   )
 }
 

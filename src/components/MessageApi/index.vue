@@ -1,4 +1,12 @@
 <script lang="ts" setup>
+import { onBeforeUnmount } from 'vue'
 import { useMessage } from 'naive-ui'
-window.$message = useMessage()
+import { setMessageApi } from '/@/utils/message'
+
+const message = useMessage()
+setMessageApi(message)
+
+onBeforeUnmount(() => {
+	setMessageApi(null)
+})
 </script>

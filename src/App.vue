@@ -20,6 +20,7 @@
   </n-config-provider>
 </template>
 <script setup lang="ts">
+import { computed } from 'vue'
 import { NMessageProvider, zhCN, darkTheme, dateZhCN } from 'naive-ui'
 import { useDesignSettingStore } from '/@/store/modules/designSetting'
 // 主题配置

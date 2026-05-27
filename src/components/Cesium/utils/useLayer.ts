@@ -1,5 +1,10 @@
 import * as Cesium from 'cesium'
 
+type LayerProviderLike = {
+  layer?: string
+  _layer?: string
+}
+
 // 天地图URL前缀
 const TDT_URL_PREFIX = 'http://{s}.tianditu.gov.cn'
 // 天地图支持的子域
@@ -37,3 +42,25 @@ const LAYER_CONFIGS: TileConfig[] = [
 
 // 根据上述配置创建图层列表
 export const layers = LAYER_CONFIGS.map((config) => createTile(config))
+
+export const getProviderLayerId = (provider: unknown): string | undefined => {
+  if (!provider || typeof provider !== 'object') {
+    return undefined
+  }
+
+  const layerProvider = provider as LayerProviderLike
+  return layerProvider.layer ?? layerProvider._layer
+}
+
+export const setVisibleBaseLayers = (viewer: Cesium.Viewer, activeLayerIds: string[]): void => {
+  const activeLayerSet = new Set(activeLayerIds)
+  const imageryLayers = viewer.imageryLayers
+
+  for (let i = 0; i < imageryLayers.length; i++) {
+    const imageryLayer = imageryLayers.get(i)
+    const layerId = getProviderLayerId(imageryLayer.imageryProvider)
+    imageryLayer.show = !!layerId && activeLayerSet.has(layerId)
+  }
+
+  viewer.scene?.requestRender()
+}

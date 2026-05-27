@@ -10,6 +10,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { showMessage } from './status'
 import { IResponse } from './type'
 import { getToken } from '/@/utils/auth'
+import { notifyError } from '/@/utils/message'
 
 // Initialize Axios Instance with Default Config
 const axiosInstance: AxiosInstance = axios.create({
@@ -37,7 +38,7 @@ axiosInstance.interceptors.response.use(
     if (response.status === 200) {
       return response
     }
-    window.$message.error(showMessage(response.status))
+    notifyError(showMessage(response.status))
     return Promise.reject(response)
   },
   (error: any) => {
@@ -46,7 +47,7 @@ axiosInstance.interceptors.response.use(
       showMessage(response.status)
       return Promise.reject(response.data)
     }
-    window.$message.error(showMessage('网络连接异常,请稍后再试!'))
+    notifyError(showMessage('网络连接异常,请稍后再试!'))
     return Promise.reject(error)
   }
 )
