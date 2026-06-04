@@ -150,6 +150,11 @@ import Cesium from '/@/components/Cesium'
 import { getViewerInstance } from '/@/components/Cesium/utils/viewerRegistry'
 import { layersSettingStore } from '/@/store/modules/layersSetting'
 import {
+  DEFAULT_BASE_LAYER_OPTION_KEY,
+  getEnabledBaseLayerOptions,
+  type BaseLayerOption,
+} from '/@/settings/baseLayerSetting'
+import {
   addLineLayer,
   addPointLayer,
   addPolygonLayer,
@@ -193,14 +198,8 @@ const SOURCE_IDS = {
 
 type DemoLayerKey = keyof typeof SOURCE_IDS
 type BBox = [number, number, number, number]
-type BaseLayerKey = 'vector' | 'image' | 'imageOnly' | 'none'
+type BaseLayerKey = string
 type DemoButtonTone = 'point' | 'line' | 'polygon' | 'track' | 'mock' | 'danger' | 'reset'
-
-interface BaseLayerOption {
-  key: BaseLayerKey
-  label: string
-  layerIds: string[]
-}
 
 interface DemoLayerOption {
   key: DemoLayerKey
@@ -228,12 +227,8 @@ const terrainUrl = import.meta.env.VITE_APP_MAP_URL ?? ''
  * - “影像无注记”用于排查业务图层遮挡，演示时可以只看影像底纹。
  * - “隐藏”保留业务数据图层，便于确认点线面是否真正由 GeoJSON 数据源渲染。
  */
-const baseLayerOptions: BaseLayerOption[] = [
-  { key: 'vector', label: '矢量', layerIds: ['vec', 'cva'] },
-  { key: 'image', label: '影像', layerIds: ['img', 'cia'] },
-  { key: 'imageOnly', label: '影像无注记', layerIds: ['img'] },
-  { key: 'none', label: '隐藏', layerIds: [] },
-]
+const baseLayerOptions: BaseLayerOption[] = getEnabledBaseLayerOptions()
+const fallbackBaseLayerKey = baseLayerOptions[0]?.key ?? 'none'
 
 /**
  * 业务图层开关配置。
@@ -246,7 +241,11 @@ const demoLayerOptions: DemoLayerOption[] = [
   { key: 'track', label: '轨迹' },
 ]
 
-const activeBaseLayer = ref<BaseLayerKey>('vector')
+const activeBaseLayer = ref<BaseLayerKey>(
+  baseLayerOptions.some((item) => item.key === DEFAULT_BASE_LAYER_OPTION_KEY)
+    ? DEFAULT_BASE_LAYER_OPTION_KEY
+    : fallbackBaseLayerKey
+)
 const layerVisibility = reactive<Record<DemoLayerKey, boolean>>({
   points: false,
   lines: false,
@@ -404,6 +403,9 @@ const formatBbox = (bbox: BBox): string => {
 const handleSwitchBaseLayer = (key: BaseLayerKey, silent = false): void => {
   const option = baseLayerOptions.find((item) => item.key === key)
   if (!option) {
+    if (!silent) {
+      setInteractionMessage('目标底图配置未启用，请检查底图配置文件')
+    }
     return
   }
 
@@ -914,7 +916,7 @@ const unsubscribe = onCesiumViewerReady(async () => {
   status.activeBbox = formatBbox(FALLBACK_BBOX)
   setInteractionMessage('地图已就绪，可开始交互演示')
   await nextTick()
-  handleSwitchBaseLayer('vector', true)
+  handleSwitchBaseLayer(activeBaseLayer.value, true)
   await handleReset()
   scheduleSecondaryInspection()
 })

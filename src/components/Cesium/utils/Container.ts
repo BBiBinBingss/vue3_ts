@@ -9,7 +9,7 @@
 
 import { Viewer, Cartesian3, Math as CesiumMath } from 'cesium'
 import { nextTick } from 'vue'
-import { layers } from './useLayer'
+import { baseLayerProviders } from './useLayer'
 import { viewerSettingStore } from '/@/store/modules/viewerSetting'
 import { coordinatesSettingStore } from '/@/store/modules/coordinatesSetting'
 import { setViewerInstance } from './viewerRegistry'
@@ -56,7 +56,7 @@ export default class Container {
    * 初始化图层
    */
   private initializeLayers(): void {
-    layers.forEach((layer) => {
+    baseLayerProviders.forEach((layer) => {
       this.viewer.imageryLayers.addImageryProvider(layer)
     })
 

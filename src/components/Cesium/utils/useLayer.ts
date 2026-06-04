@@ -1,51 +1,81 @@
 import * as Cesium from 'cesium'
+import {
+  getEnabledBaseLayerProviderConfigs,
+  type BaseLayerProviderConfig,
+} from '/@/settings/baseLayerSetting'
 
 type LayerProviderLike = {
   layer?: string
   _layer?: string
 }
 
+const providerIdStore = new WeakMap<object, string>()
+
 // 天地图URL前缀
-const TDT_URL_PREFIX = 'http://{s}.tianditu.gov.cn'
+const TDT_URL_PREFIX = 'https://{s}.tianditu.gov.cn'
 // 天地图支持的子域
 const SUBDOMAINS = ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7']
 
-// 定义图层配置接口
-interface TileConfig {
-  className: string // 图层名称
-  layer: string // 图层类型
+const resolveTilingScheme = (type?: BaseLayerProviderConfig['tilingScheme']) => {
+  if (type === 'geographic') {
+    return new Cesium.GeographicTilingScheme()
+  }
+  return new Cesium.WebMercatorTilingScheme()
+}
+
+const setProviderId = (provider: Cesium.ImageryProvider, id: string): Cesium.ImageryProvider => {
+  providerIdStore.set(provider as unknown as object, id)
+  return provider
 }
 
 /**
- * 根据提供的图层配置创建Cesium瓦片图层
- * @param {TileConfig} 参数包含图层名称和类型
- * @returns 返回Cesium的WebMapTileServiceImageryProvider实例
+ * 按配置创建底图 provider。
  */
-const createTile = ({ className, layer }: TileConfig) => {
-  return new Cesium.WebMapTileServiceImageryProvider({
-    url: `${TDT_URL_PREFIX}/${layer}_w/wmts?tk=${import.meta.env.VITE_APP_TOKEN}`, // 图层URL
-    layer: layer,
-    style: 'default',
-    tileMatrixSetID: 'w',
-    subdomains: SUBDOMAINS,
-    credit: new Cesium.Credit(className),
-  })
+const createProvider = (config: BaseLayerProviderConfig): Cesium.ImageryProvider => {
+  if (config.providerType === 'tdt-wmts') {
+    const layer = config.layer ?? ''
+    const token = import.meta.env.VITE_APP_TOKEN ?? ''
+    return setProviderId(
+      new Cesium.WebMapTileServiceImageryProvider({
+        url: `${TDT_URL_PREFIX}/${layer}_w/wmts?tk=${token}`,
+        layer,
+        style: config.style ?? 'default',
+        tileMatrixSetID: config.tileMatrixSetID ?? 'w',
+        subdomains: config.subdomains ?? SUBDOMAINS,
+        minimumLevel: config.minimumLevel,
+        maximumLevel: config.maximumLevel,
+        credit: new Cesium.Credit(config.name),
+      }),
+      config.id
+    )
+  }
+
+  return setProviderId(
+    new Cesium.UrlTemplateImageryProvider({
+      url: config.url ?? '',
+      subdomains: config.subdomains,
+      minimumLevel: config.minimumLevel,
+      maximumLevel: config.maximumLevel,
+      tilingScheme: resolveTilingScheme(config.tilingScheme),
+      enablePickFeatures: config.enablePickFeatures ?? false,
+      credit: new Cesium.Credit(config.name),
+    }),
+    config.id
+  )
 }
 
-// 定义要创建的图层的配置列表
-const LAYER_CONFIGS: TileConfig[] = [
-  { layer: 'img', className: '影像底图' },
-  { layer: 'cia', className: '影像注记' },
-  { layer: 'vec', className: '矢量底图' },
-  { layer: 'cva', className: '矢量注记' },
-]
-
-// 根据上述配置创建图层列表
-export const layers = LAYER_CONFIGS.map((config) => createTile(config))
+export const baseLayerProviders = getEnabledBaseLayerProviderConfigs().map((config) =>
+  createProvider(config)
+)
 
 export const getProviderLayerId = (provider: unknown): string | undefined => {
   if (!provider || typeof provider !== 'object') {
     return undefined
+  }
+
+  const customId = providerIdStore.get(provider as object)
+  if (customId) {
+    return customId
   }
 
   const layerProvider = provider as LayerProviderLike

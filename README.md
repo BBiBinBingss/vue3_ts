@@ -23,6 +23,27 @@
 - 降低 `index.vue` 对 Cesium 细节的直接耦合；
 - 让后续图层/地形能力可按组件继续扩展。
 
+### 多底图配置（天地图 / 高德 / 百度 / 腾讯）
+
+底图配置统一在 `src/settings/baseLayerSetting.ts` 中维护，分两层：
+
+- `BASE_LAYER_PROVIDER_CONFIGS`：底层 provider 定义（URL、子域、类型、是否启用）。
+- `BASE_LAYER_OPTIONS`：页面上的“底图按钮”组合（可以把多个 provider 组合成一个选项）。
+
+可配置能力：
+
+- 支持 provider 级别 `enabled: false` 关闭（例如临时禁用百度）。
+- 支持 option 级别 `enabled: false` 隐藏按钮。
+- 支持任意组合 `layerIds`（例如“高德底图 + 天地图注记”）。
+
+示例（在 `BASE_LAYER_OPTIONS` 中新增一个混合底图）：
+
+```ts
+{ key: 'gaodeWithLabel', label: '高德+天地图注记', layerIds: ['gaode-vec', 'cva'] }
+```
+
+页面无需改业务代码，`src/pages/index/index.vue` 会自动读取启用后的配置项。
+
 
 
 ## 基础框架
