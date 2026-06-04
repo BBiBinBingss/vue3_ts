@@ -6,11 +6,11 @@
  * @FilePath     : \vue3_ts\src\router\index.ts
  * @Description  :
  */
+import type { App } from 'vue'
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import { setupLayouts } from 'virtual:generated-layouts'
 import generatedRoutes from 'virtual:generated-pages'
-import NProgress from 'nprogress'
-import '/@/assets/styles/nprogress.less'
+import { setupRouterGuards } from './guards'
 
 type ExtendedRouteRecordRaw = RouteRecordRaw & {
   meta?: {
@@ -26,13 +26,10 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach(async (_to, _from, next) => {
-  NProgress.start()
-  next()
-})
+setupRouterGuards(router)
 
-router.afterEach(() => {
-  NProgress.done()
-})
+export function setupRouter(app: App<Element>): void {
+  app.use(router)
+}
 
 export default router

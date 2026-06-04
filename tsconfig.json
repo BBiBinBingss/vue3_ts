@@ -28,7 +28,7 @@
     "lib": ["dom", "esnext"],
     "noImplicitAny": false,
     "skipLibCheck": true,
-    "types": ["vite/client", "vite-plugin-vue-layouts/client"],
+    "types": ["node", "vite/client", "vite-plugin-pages/client", "vite-plugin-vue-layouts/client"],
     "removeComments": true,
     "paths": {
       "/@/*": ["src/*"],

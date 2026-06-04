@@ -12,7 +12,13 @@ import { createPinia } from 'pinia'
 
 const store = createPinia()
 
-export function setupStore(app: App<Element>) {
+/*
+ * Pinia 注册入口。
+ *
+ * 保持全局 store 单例导出，既支持组件内 useXxxStore()，
+ * 也支持路由守卫、请求拦截器等组件外场景通过 store 实例读取状态。
+ */
+export function setupStore(app: App<Element>): void {
   app.use(store)
 }
 
