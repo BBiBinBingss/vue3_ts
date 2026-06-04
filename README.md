@@ -99,6 +99,7 @@ pnpm build:analyze
 ├── public/
 ├── src/
 │   ├── api/                # 接口层
+│   ├── app/                # 应用启动、全局插件、Provider 配置
 │   ├── assets/             # 静态资源与样式
 │   ├── components/         # 公共组件
 │   ├── layouts/            # 布局组件
@@ -117,6 +118,14 @@ pnpm build:analyze
 ```
 
 ## 核心能力
+
+### 应用启动层
+
+- `src/main.ts` 只调用 `bootstrap`，避免入口文件继续膨胀。
+- `src/app/index.ts` 负责 `createApp`、插件注册和挂载。
+- `src/app/styles.ts` 负责全局样式与 SVG 注册。
+- `src/app/plugins.ts` 负责框架级插件注册顺序，当前顺序为 `Pinia -> Router`。
+- `src/app/naive.ts` 负责 Naive UI 根级主题、语言和日期语言包配置。
 
 ### 自动路由
 
