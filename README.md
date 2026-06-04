@@ -44,8 +44,6 @@
 
 页面无需改业务代码，`src/pages/index/index.vue` 会自动读取启用后的配置项。
 
-
-
 ## 基础框架
 
 ## 目录结构
@@ -62,6 +60,7 @@
 ├── plop-tpls            // plop模板
 ├── src
 │    ├── api             // api请求
+│    ├── app             // 应用启动、全局插件、Provider 配置
 │    ├── assets          // 静态文件
 │    ├── components      // 业务通用组件
 │    ├── page            // 业务页面
@@ -75,6 +74,18 @@
 ├── tsconfig.json        // ts配置
 └── vite.config.ts       // vite全局配置
 ```
+
+## 应用启动层
+
+`src/app` 是长期基础框架的启动层，负责把入口职责拆清楚：
+
+- `src/main.ts`：只调用 `bootstrap`，避免入口文件继续膨胀。
+- `src/app/index.ts`：负责 `createApp`、插件注册和挂载。
+- `src/app/styles.ts`：负责 Windi CSS 和 SVG 雪碧图等启动前资源。
+- `src/app/plugins.ts`：负责框架级插件注册顺序，当前顺序为 `Pinia -> Router`。
+- `src/app/naive.ts`：负责 Naive UI 根级主题、语言和日期语言包配置。
+
+后续接入权限、埋点、全局错误处理、微前端或测试启动逻辑时，优先在 `src/app` 下继续拆分，避免把业务初始化逻辑堆回 `main.ts`。
 
 ## 💕 支持 JSX 语法
 
@@ -216,7 +227,7 @@ export const useUserStore = defineStore(
     state: () => ({}),
     getters: {},
     actions: {},
-  }
+  },
 )
 ```
 
